@@ -1,7 +1,13 @@
 # Run the project
 
 ```
-npm install or yarn
+npm install
+```
+or
+```
+yarn
+```
+```
 npm install -g serve
 npm run build
 serve -s build
