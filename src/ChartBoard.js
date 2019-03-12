@@ -104,6 +104,36 @@ class ChartBoard {
     })
   }
 
+  transition (cb, dataFrom, dataTo) {
+    const max = 60
+    const diff = dataTo - dataFrom
+    let delta = 1
+    let current = 0
+
+    const findCurrentPosition = time => dataFrom + diff * time
+    const ease = time => time < 0.5 ? 4 * Math.pow(time, 3) : (time - 1) * Math.pow(2 * time - 2, 2) + 1
+    // const ease = time => Math.pow(time,0.25)
+
+    const int = () => {
+      // setTimeout(() => {
+        current += delta
+        const time = current / max
+
+        if (time <= 0 || time >= 1) {
+          delta = -delta
+        }
+
+        const currentData = findCurrentPosition(ease(time))
+
+        cb(currentData)
+
+        requestAnimationFrame(int)
+      // }, 1000 / 200)
+    }
+
+    requestAnimationFrame(int)
+  }
+
   drawXAxises () {
     this.setTheBiggest()
     const linesAmount = 5

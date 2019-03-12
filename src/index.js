@@ -31,7 +31,25 @@ document.addEventListener('DOMContentLoaded', () => {
     plotName.innerText = currentPlotId + 1
   }
 
-  draw(currentPlotId)
+  chart.drawALine([100, 420], [200, 400])
+  // chart.drawALine([200, 230], [300, 230])
+  // chart.drawALine([300, 300], [400, 300])
+
+  setTimeout(() => {
+    chart.transition(data => {
+      chart.clearCanvas()
+      chart.drawALine([100, data + 20], [200, data])
+    }, 400, 100)
+  }, 1000)
+
+  // setTimeout(() => {
+  //   chart.transition(data => {
+  //     chart.clearCanvas()
+  //     chart.drawALine([300, 400], [400, data])
+  //   }, 100, 400)
+  // }, 3000)
+
+  // draw(currentPlotId)
 
   addButtons(parsed, draw).forEach(button => plotsContainer.appendChild(button))
 })
