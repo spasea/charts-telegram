@@ -1,12 +1,38 @@
 import Data from './chart_data'
 
 import ChartBoard from './ChartBoard'
+import Buttons from './Components/Buttons'
+import Button from './DTO/Button'
+import Dom from './Services/Dom'
 import * as serviceWorker from './serviceWorker'
 import './styles/index.scss'
 
 let currentPlotId = 0
 
 document.addEventListener('DOMContentLoaded', () => {
+  const buttonsDiv = document.querySelector('.buttons')
+  let checkedButtons = []
+  const btns = new Buttons([
+    Button.execute('Name here', 1, '#f00'),
+    Button.execute('Name here 2', 2, '#ff0'),
+  ], buttonsDiv, checkedButtons)
+
+  btns.addButtonsHandler(id => {
+    checkedButtons = checkedButtons.includes(id)
+      ? checkedButtons.filter(buttonId => buttonId !== id)
+      : [
+        ...checkedButtons,
+        id
+      ]
+
+    btns.buttonsSelected = checkedButtons
+  })
+
+  btns.DomService = Dom
+  btns.insertButtons()
+
+  return
+
   const canvasRef = document.getElementById('canvas')
   const plotsContainer = document.getElementsByClassName('plots')[0]
   const plotName = document.getElementsByClassName('plot-name')[0]

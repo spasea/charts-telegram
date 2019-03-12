@@ -1,1 +1,13 @@
 @import "~normalize.scss/normalize";
+
+.chart-button {
+  --primary-color: #f00;
+  transition: 300ms all ease;
+  outline: none;
+  background: none;
+  border: none;
+
+  &--is-checked {
+    background: var(--primary-color);
+  }
+}
