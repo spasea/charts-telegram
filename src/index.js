@@ -4,7 +4,7 @@ import ChartBoard from './ChartBoard'
 import * as serviceWorker from './serviceWorker'
 import './styles/index.scss'
 
-let currentPlotId = 2
+let currentPlotId = 0
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvasRef = document.getElementById('canvas')
@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const draw = id => {
     chart.chartData = parsed[id]
+    chart.clearCanvas()
+    chart.drawXAxises()
     chart.drawAPlot()
 
     console.log({
