@@ -1,8 +1,8 @@
 class Dom {
   /**
    * Replaces children in parent element
-   * @param {HTMLElement[]} children
-   * @param {HTMLElement} parentRef
+   * @param {Element[]} children
+   * @param {Element} parentRef
    */
   static insert (children, parentRef) {
     parentRef.innerHTML = ''
