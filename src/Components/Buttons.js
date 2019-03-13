@@ -1,5 +1,6 @@
 class Buttons {
   _DomService = null
+  componentUpdate = () => ''
 
   /**
    *
@@ -14,40 +15,11 @@ class Buttons {
     this.classNames = {
       checked: 'chart-button--is-checked',
       default: 'chart-button',
+      checkbox: 'chart-button__checkbox'
     }
     this.primaryColorName = '--primary-color'
     this.buttonElements = []
     this.generateButtonElements()
-  }
-
-  addButtonsHandler (handler) {
-    this.handler = handler
-  }
-
-  /**
-   *
-   * @param {name, id, color} button
-   */
-  generateButton = button => {
-    const buttonElement = document.createElement('button')
-    buttonElement.innerText = button.name
-    buttonElement.classList.add(this.classNames.default)
-    buttonElement.dataset.id = button.id
-    buttonElement.addEventListener('click', () => {
-      this.handler(button.id)
-      this.render()
-    })
-    buttonElement.style.setProperty(this.primaryColorName, button.color)
-
-    return buttonElement
-  }
-
-  generateButtonElements () {
-    this.buttonElements = this.buttons.map(this.generateButton)
-  }
-
-  insertButtons = () => {
-    this.DomService.insert(this.buttonElements, this.buttonsContainer)
   }
 
   /**
@@ -68,12 +40,44 @@ class Buttons {
     return this._DomService
   }
 
-  render () {
+  componentWillUpdate () {
     this.buttonsContainer.childNodes.forEach(button => {
       const buttonId = +button.dataset.id
       const isChecked = this.buttonsSelected.includes(buttonId)
       button.classList[isChecked ? 'add' : 'remove'](this.classNames.checked)
     })
+  }
+
+  /**
+   *
+   * @param {name, id, color} button
+   */
+  generateButton = button => {
+    const buttonElement = document.createElement('button')
+    const checkElement = document.createElement('div')
+    checkElement.classList.add(this.classNames.checkbox)
+
+    buttonElement.innerHTML += checkElement.outerHTML
+    buttonElement.innerHTML += button.name
+
+    buttonElement.classList.add(this.classNames.default)
+    buttonElement.dataset.id = button.id
+    buttonElement.addEventListener('click', () => {
+      this.componentUpdate(button.id)
+      this.componentWillUpdate()
+    })
+    buttonElement.style.setProperty(this.primaryColorName, button.color)
+
+    return buttonElement
+  }
+
+  generateButtonElements () {
+    this.buttonElements = this.buttons.map(this.generateButton)
+  }
+
+  renders () {
+    this.generateButtonElements()
+    this.DomService.insert(this.buttonElements, this.buttonsContainer)
   }
 }
 

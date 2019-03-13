@@ -6,6 +6,9 @@
   outline: none;
   background: none;
   border: none;
+  overflow: hidden;
+  padding: 10px;
+  border-radius: 20px;
 
   &--is-checked {
     background: var(--primary-color);
