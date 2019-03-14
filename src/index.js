@@ -13,31 +13,7 @@ import './styles/index.scss'
 
 let currentPlotId = 0
 
-document.addEventListener('DOMContentLoaded', () => {
-  const buttonsDiv = document.querySelector('.buttons')
-  let checkedButtons = []
-  const btns = new Buttons([
-    Button.execute('Name here', 1, '#f00'),
-    Button.execute('Name here 2', 2, '#ff0'),
-  ], buttonsDiv, checkedButtons)
-
-  btns.componentUpdate = id => {
-    checkedButtons = checkedButtons.includes(id)
-      ? checkedButtons.filter(buttonId => buttonId !== id)
-      : [
-        ...checkedButtons,
-        id
-      ]
-
-    btns.buttonsSelected = checkedButtons
-  }
-
-  btns.DomService = Dom
-  btns.renders()
-
-  const height = 600
-  const width = 1000
-  const canvasRef = document.getElementById('canvas')
+const initPlot = (height = 600, width = 1000, canvasRef) => {
   const drawingServ = new Drawing(canvasRef, width, height)
 
   const parsed = JSON.parse(Data)
@@ -81,6 +57,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // setTimeout(anim, 1500)
 
   setInterval(anim, 2000)
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const buttonsDiv = document.querySelector('.buttons')
+  let checkedButtons = []
+  const btns = new Buttons([
+    Button.execute('Name here', 1, '#f00'),
+    Button.execute('Name here 2', 2, '#ff0'),
+  ], buttonsDiv, checkedButtons)
+
+  btns.componentUpdate = id => {
+    checkedButtons = checkedButtons.includes(id)
+      ? checkedButtons.filter(buttonId => buttonId !== id)
+      : [
+        ...checkedButtons,
+        id
+      ]
+
+    btns.buttonsSelected = checkedButtons
+  }
+
+  btns.DomService = Dom
+  btns.renders()
+
+  initPlot(600, 1000, document.getElementById('canvas1'))
+  initPlot(70, 1000, document.getElementById('canvas2'))
 
 
   // const canvasRef = document.getElementById('canvas')
