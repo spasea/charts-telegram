@@ -1,7 +1,7 @@
 class Drawing {
   /**
    *
-   * @param {HTMLCanvasElement} canvas
+   * @param {HTMLElement} canvas
    * @param {number} width
    * @param {number} height
    */
@@ -10,6 +10,8 @@ class Drawing {
     this.height = height
     this.width = width
     this.ctx = this.canvas.getContext('2d')
+    this.canvas.height = height
+    this.canvas.width = width
   }
 
   clearCanvas () {
