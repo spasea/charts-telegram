@@ -119,19 +119,21 @@ class ChartDrawing {
         this.chartAxis.yAxises[0][id + 1]
       ]
 
-      console.log({
-        start,
-        end,
-        pr: this.previousAxis.yAxises[0],
-        cur: this.chartAxis.yAxises[0]
-      })
+      // console.log({
+      //   start,
+      //   end,
+      //   pr: this.previousAxis.yAxises[0],
+      //   cur: this.chartAxis.yAxises[0]
+      // })
 
       const startX = this.chartAxis.xAxis[id]
       const endX = this.chartAxis.xAxis[id + 1]
-      this.calculateADynamic(...start, 60, startY => {
-        this.calculateADynamic(...end, 60, endY => {
-          this.DrawingService.drawALine(new Coordinates(startX, startY), new Coordinates(endX, endY), color)
-        })()
+      let startY
+      this.calculateADynamic(...start, 60, val => {
+        startY = val
+      })()
+      this.calculateADynamic(...end, 60, endY => {
+        this.DrawingService.drawALine(new Coordinates(startX, startY), new Coordinates(endX, endY), color)
       })()
     }
 
@@ -145,7 +147,6 @@ class ChartDrawing {
   }
 
   reqAnimate (id = 1) {
-
     if (id > Object.keys(this._reqQuery).length) {
       return
     }

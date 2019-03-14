@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const parsed = JSON.parse(Data)
 
-  const amount = 4
+  const amount = 100
 
   const chartb = new ChartDrawing(height, width, ChartAxis.execute(
     parsed[0].columns[0].slice(1, amount + 1),
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let cur = 0
 
-  setInterval(() => {
+  const anim = () => {
     cur = cur >= 4 ? 0 : cur + 1
 
     chartb.updateData(ChartAxis.execute(
@@ -76,7 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
         parsed[cur].columns[2].slice(1, amount + 1),
       ]
     ), parsed[cur].colors.y0)()
-  }, 2000)
+  }
+
+  // setTimeout(anim, 1500)
+
+  setInterval(anim, 2000)
 
 
   // const canvasRef = document.getElementById('canvas')

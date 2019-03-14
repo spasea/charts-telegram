@@ -33,6 +33,7 @@ class Drawing {
     this.ctx.moveTo(...start.value)
     this.ctx.lineTo(...end.value)
     this.ctx.stroke()
+    // this.ctx.fillText(start.value[1], ...start.value)
   }
 
   /**
