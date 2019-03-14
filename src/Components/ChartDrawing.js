@@ -65,8 +65,8 @@ class ChartDrawing {
       yAxises: this.chartAxis.yAxises.map(axis => axis.map(this.scaleY))
     }
 
-    this.chartAxis.yAxises.forEach((axis, idx) => axis.forEach((point, pointIdx) => {
-      const nextY = axis[pointIdx + 1]
+    this.chartAxis.yAxises[0].forEach((point, pointIdx) => {
+      const nextY = this.chartAxis.yAxises[0][pointIdx + 1]
 
       if (!nextY) {
         return
@@ -75,18 +75,18 @@ class ChartDrawing {
       const currentX = this.chartAxis.xAxis[pointIdx]
       const nextX = this.chartAxis.xAxis[pointIdx + 1]
 
-      // const startCoordinates = new Coordinates(currentX, point)
-      // const endCoordinates = new Coordinates(nextX, nextY)
+      const startCoordinates = new Coordinates(currentX, point)
+      const endCoordinates = new Coordinates(nextX, nextY)
 
-      // this.DrawingService.drawALine(startCoordinates, endCoordinates)
-    }))
+      this.DrawingService.drawALine(startCoordinates, endCoordinates, color)
+    })
 
     const generate = id => {
       const x = this.chartAxis.xAxis[id]
       this.DrawingService.drawADot(new Coordinates(x, this.chartAxis.yAxises[0][id]), 2, color)
     }
 
-    this.chartAxis.xAxis.forEach((_, idx) => generate(idx))
+    // this.chartAxis.xAxis.forEach((_, idx) => generate(idx))
   }
 
   updateData (newAxis, color) {
@@ -109,11 +109,29 @@ class ChartDrawing {
     }
 
     const generate = id => {
-      const prev = this.previousAxis.yAxises[0][id]
-      const current = this.chartAxis.yAxises[0][id]
-      const x = this.chartAxis.xAxis[id]
-      this.calculateADynamic(prev, current, 60, value => {
-        this.DrawingService.drawADot(new Coordinates(x, value), 2, color)
+      const start = [
+        this.previousAxis.yAxises[0][id],
+        this.chartAxis.yAxises[0][id]
+      ]
+
+      const end = [
+        this.previousAxis.yAxises[0][id + 1],
+        this.chartAxis.yAxises[0][id + 1]
+      ]
+
+      console.log({
+        start,
+        end,
+        pr: this.previousAxis.yAxises[0],
+        cur: this.chartAxis.yAxises[0]
+      })
+
+      const startX = this.chartAxis.xAxis[id]
+      const endX = this.chartAxis.xAxis[id + 1]
+      this.calculateADynamic(...start, 60, startY => {
+        this.calculateADynamic(...end, 60, endY => {
+          this.DrawingService.drawALine(new Coordinates(startX, startY), new Coordinates(endX, endY), color)
+        })()
       })()
     }
 
