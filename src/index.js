@@ -42,13 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const parsed = JSON.parse(Data)
 
-  const amount = 100
+  const amount = 4
 
   const chartb = new ChartDrawing(height, width, ChartAxis.execute(
-    parsed[0].columns[0].slice(1, amount),
+    parsed[0].columns[0].slice(1, amount + 1),
     [
-      parsed[0].columns[1].slice(1, amount),
-      parsed[0].columns[2].slice(1, amount),
+      parsed[0].columns[1].slice(1, amount + 1),
+      parsed[0].columns[2].slice(1, amount + 1),
     ]
   ))
 
@@ -70,10 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
     cur = cur >= 4 ? 0 : cur + 1
 
     chartb.updateData(ChartAxis.execute(
-      parsed[cur].columns[0].slice(1, amount),
+      parsed[cur].columns[0].slice(1, amount + 1),
       [
-        parsed[cur].columns[1].slice(1, amount),
-        parsed[cur].columns[2].slice(1, amount),
+        parsed[cur].columns[1].slice(1, amount + 1),
+        parsed[cur].columns[2].slice(1, amount + 1),
       ]
     ), parsed[cur].colors.y0)()
   }, 2000)
