@@ -3,7 +3,11 @@ import Data from './chart_data'
 import ChartBoard from './ChartBoard'
 import Buttons from './Components/Buttons'
 import Button from './DTO/Button'
+import ChartAxis from './DTO/ChartAxis'
 import Dom from './Services/Dom'
+import ChartDrawing from './Components/ChartDrawing'
+import Drawing from './Services/Drawing'
+import Easing from './Services/Easing'
 import * as serviceWorker from './serviceWorker'
 import './styles/index.scss'
 
@@ -17,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     Button.execute('Name here 2', 2, '#ff0'),
   ], buttonsDiv, checkedButtons)
 
-  btns.addButtonsHandler(id => {
+  btns.componentUpdate = id => {
     checkedButtons = checkedButtons.includes(id)
       ? checkedButtons.filter(buttonId => buttonId !== id)
       : [
@@ -26,58 +30,100 @@ document.addEventListener('DOMContentLoaded', () => {
       ]
 
     btns.buttonsSelected = checkedButtons
-  })
-
-  btns.DomService = Dom
-  btns.insertButtons()
-
-  return
-
-  const canvasRef = document.getElementById('canvas')
-  const plotsContainer = document.getElementsByClassName('plots')[0]
-  const plotName = document.getElementsByClassName('plot-name')[0]
-  const chart = new ChartBoard(canvasRef, 600, 1300)
-
-  const parsed = JSON.parse(Data)
-  // chart.chartData = parsed[0]
-  // chart.drawAPlot()
-
-  const draw = id => {
-    chart.chartData = parsed[id]
-    chart.clearCanvas()
-    chart.drawXAxises()
-    chart.drawAPlot()
-
-    console.log({
-      chart,
-      id,
-      pars: parsed[id]
-    })
-
-    plotName.innerText = currentPlotId + 1
   }
 
-  chart.drawALine([100, 420], [200, 400])
-  // chart.drawALine([200, 230], [300, 230])
-  // chart.drawALine([300, 300], [400, 300])
+  btns.DomService = Dom
+  btns.renders()
 
-  setTimeout(() => {
-    chart.transition(data => {
-      chart.clearCanvas()
-      chart.drawALine([100, data + 20], [200, data])
-    }, 400, 100)
-  }, 1000)
+  const height = 600
+  const width = 1000
+  const canvasRef = document.getElementById('canvas')
+  const drawingServ = new Drawing(canvasRef, width, height)
 
+  const parsed = JSON.parse(Data)
+
+  const amount = 100
+
+  const chartb = new ChartDrawing(height, width, ChartAxis.execute(
+    parsed[0].columns[0].slice(1, amount),
+    [
+      parsed[0].columns[1].slice(1, amount),
+      parsed[0].columns[2].slice(1, amount),
+    ]
+  ))
+
+  chartb.EasingService = Easing.easeInOut
+  chartb.DrawingService = drawingServ
+
+  drawingServ.clearCanvas()
+
+  chartb.initialDraw(parsed[0].colors.y0)
+
+  console.log({
+    parsed,
+    chartb
+  })
+
+  let cur = 0
+
+  setInterval(() => {
+    cur = cur >= 4 ? 0 : cur + 1
+
+    chartb.updateData(ChartAxis.execute(
+      parsed[cur].columns[0].slice(1, amount),
+      [
+        parsed[cur].columns[1].slice(1, amount),
+        parsed[cur].columns[2].slice(1, amount),
+      ]
+    ), parsed[cur].colors.y0)()
+  }, 2000)
+
+
+  // const canvasRef = document.getElementById('canvas')
+  // const plotsContainer = document.getElementsByClassName('plots')[0]
+  // const plotName = document.getElementsByClassName('plot-name')[0]
+  // const chart = new ChartBoard(canvasRef, 600, 1300)
+  //
+  //
+  // // chart.chartData = parsed[0]
+  // // chart.drawAPlot()
+  //
+  // const draw = id => {
+  //   chart.chartData = parsed[id]
+  //   chart.clearCanvas()
+  //   chart.drawXAxises()
+  //   chart.drawAPlot()
+  //
+  //   console.log({
+  //     chart,
+  //     id,
+  //     pars: parsed[id]
+  //   })
+  //
+  //   plotName.innerText = currentPlotId + 1
+  // }
+  //
+  // chart.drawALine([100, 420], [200, 400])
+  // // chart.drawALine([200, 230], [300, 230])
+  // // chart.drawALine([300, 300], [400, 300])
+  //
   // setTimeout(() => {
   //   chart.transition(data => {
   //     chart.clearCanvas()
-  //     chart.drawALine([300, 400], [400, data])
-  //   }, 100, 400)
-  // }, 3000)
-
-  // draw(currentPlotId)
-
-  addButtons(parsed, draw).forEach(button => plotsContainer.appendChild(button))
+  //     chart.drawALine([100, data + 20], [200, data])
+  //   }, 400, 100)
+  // }, 1000)
+  //
+  // // setTimeout(() => {
+  // //   chart.transition(data => {
+  // //     chart.clearCanvas()
+  // //     chart.drawALine([300, 400], [400, data])
+  // //   }, 100, 400)
+  // // }, 3000)
+  //
+  // // draw(currentPlotId)
+  //
+  // addButtons(parsed, draw).forEach(button => plotsContainer.appendChild(button))
 })
 
 const changePlotId = (id, callback) => {
