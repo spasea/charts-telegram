@@ -22,10 +22,7 @@ const initPlot = (height = 600, width = 1000, canvasRef) => {
 
   const chartb = new ChartDrawing(height, width, ChartAxis.execute(
     parsed[0].columns[0].slice(1, amount + 1),
-    [
-      parsed[0].columns[1].slice(1, amount + 1),
-      parsed[0].columns[2].slice(1, amount + 1),
-    ]
+    parsed[0].columns.slice(1).map(axis => axis.slice(1, amount + 1))
   ))
 
   chartb.EasingService = Easing.easeInOut
@@ -33,7 +30,7 @@ const initPlot = (height = 600, width = 1000, canvasRef) => {
 
   drawingServ.clearCanvas()
 
-  chartb.initialDraw(parsed[0].colors.y0)
+  chartb.initialDraw(Object.values(parsed[0].colors))
 
   console.log({
     parsed,
@@ -43,20 +40,20 @@ const initPlot = (height = 600, width = 1000, canvasRef) => {
   let cur = 0
 
   const anim = () => {
-    cur = cur >= 4 ? 0 : cur + 1
+    // cur = cur >= 4 ? 0 : cur + 1
+    cur = cur === 0 ? 4 : 0
 
     chartb.updateData(ChartAxis.execute(
       parsed[cur].columns[0].slice(1, amount + 1),
-      [
-        parsed[cur].columns[1].slice(1, amount + 1),
-        parsed[cur].columns[2].slice(1, amount + 1),
-      ]
-    ), parsed[cur].colors.y0)()
+      parsed[cur].columns.slice(1).map(axis => axis.slice(1, amount + 1))
+    ), Object.values(parsed[cur].colors))()
   }
 
   // setTimeout(anim, 1500)
 
-  setInterval(anim, 2000)
+  // setInterval(anim, 2000)
+
+  return anim
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -67,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
     Button.execute('Name here 2', 2, '#ff0'),
   ], buttonsDiv, checkedButtons)
 
+  const updBig = initPlot(600, 1000, document.getElementById('canvas1'))
+  // const updSmall = initPlot(70, 1000, document.getElementById('canvas2'))
+
   btns.componentUpdate = id => {
     checkedButtons = checkedButtons.includes(id)
       ? checkedButtons.filter(buttonId => buttonId !== id)
@@ -76,13 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
       ]
 
     btns.buttonsSelected = checkedButtons
+
+    updBig()
+    // updSmall()
   }
 
   btns.DomService = Dom
   btns.renders()
 
-  initPlot(600, 1000, document.getElementById('canvas1'))
-  initPlot(70, 1000, document.getElementById('canvas2'))
+
 
 
   // const canvasRef = document.getElementById('canvas')

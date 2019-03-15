@@ -50,7 +50,7 @@ class ChartDrawing {
     return (y - this.smallestY + 1) * (this.height - this.yOffset) / diff + this.yOffset - 6
   }
 
-  initialDraw (color) {
+  initialDraw (colors) {
     this.biggestX = this.chartAxis.xAxis.length
     const yArray = this.chartAxis.yAxises.reduce((acc, axis) => [
       ...acc,
@@ -65,31 +65,33 @@ class ChartDrawing {
       yAxises: this.chartAxis.yAxises.map(axis => axis.map(this.scaleY))
     }
 
-    this.chartAxis.yAxises[0].forEach((point, pointIdx) => {
-      const nextY = this.chartAxis.yAxises[0][pointIdx + 1]
+    this.chartAxis.yAxises.forEach((axis, axisId) => {
+      axis.forEach((point, pointIdx) => {
+        const nextY = this.chartAxis.yAxises[axisId][pointIdx + 1]
 
-      if (!nextY) {
-        return
-      }
+        if (!nextY) {
+          return
+        }
 
-      const currentX = this.chartAxis.xAxis[pointIdx]
-      const nextX = this.chartAxis.xAxis[pointIdx + 1]
+        const currentX = this.chartAxis.xAxis[pointIdx]
+        const nextX = this.chartAxis.xAxis[pointIdx + 1]
 
-      const startCoordinates = new Coordinates(currentX, point)
-      const endCoordinates = new Coordinates(nextX, nextY)
+        const startCoordinates = new Coordinates(currentX, point)
+        const endCoordinates = new Coordinates(nextX, nextY)
 
-      this.DrawingService.drawALine(startCoordinates, endCoordinates, color)
+        this.DrawingService.drawALine(startCoordinates, endCoordinates, colors[axisId])
+      })
     })
 
-    const generate = id => {
-      const x = this.chartAxis.xAxis[id]
-      this.DrawingService.drawADot(new Coordinates(x, this.chartAxis.yAxises[0][id]), 2, color)
-    }
+    // const generate = id => {
+    //   const x = this.chartAxis.xAxis[id]
+    //   this.DrawingService.drawADot(new Coordinates(x, this.chartAxis.yAxises[0][id]), 2, color)
+    // }
 
     // this.chartAxis.xAxis.forEach((_, idx) => generate(idx))
   }
 
-  updateData (newAxis, color) {
+  updateData (newAxis, colors) {
     // this.biggestX = Math.max(...newAxis.xAxis)
     this.biggestX = newAxis.xAxis.length
     const yArray = newAxis.yAxises.reduce((acc, axis) => [
@@ -108,15 +110,16 @@ class ChartDrawing {
       yAxises: newAxis.yAxises.map(axis => axis.map(this.scaleY))
     }
 
-    const generate = id => {
+    const generate = (id, axisId) => {
+      const offset = 0
       const start = [
-        this.previousAxis.yAxises[0][id],
-        this.chartAxis.yAxises[0][id]
+        this.previousAxis.yAxises[axisId] ? this.previousAxis.yAxises[axisId][id] : offset,
+        this.chartAxis.yAxises[axisId] ? this.chartAxis.yAxises[axisId][id] : offset
       ]
 
       const end = [
-        this.previousAxis.yAxises[0][id + 1],
-        this.chartAxis.yAxises[0][id + 1]
+        this.previousAxis.yAxises[axisId] ? this.previousAxis.yAxises[axisId][id + 1] : offset,
+        this.chartAxis.yAxises[axisId] ? this.chartAxis.yAxises[axisId][id + 1] : offset
       ]
 
       // console.log({
@@ -133,14 +136,31 @@ class ChartDrawing {
         startY = val
       })()
       this.calculateADynamic(...end, 60, endY => {
-        this.DrawingService.drawALine(new Coordinates(startX, startY), new Coordinates(endX, endY), color)
+        startY = startY < 0.01 ? -1 : startY
+        endY = endY < 0.01 ? -1 : endY
+
+        this.DrawingService.drawALine(new Coordinates(startX, startY), new Coordinates(endX, endY), colors[axisId])
       })()
     }
 
     return () => {
       this.DrawingService.clearCanvas()
 
-      this.chartAxis.xAxis.forEach((_, idx) => generate(idx))
+      if (this.chartAxis.yAxises.length < this.previousAxis.yAxises.length) {
+        const diff = this.previousAxis.yAxises.length - this.chartAxis.yAxises.length
+        const length = this.chartAxis.yAxises[0].length
+        this.chartAxis.yAxises.push(...Array(diff).fill(Array(length).fill(null)))
+      }
+
+      console.log({
+        pr: this.previousAxis.yAxises,
+        ch: this.chartAxis.yAxises
+      })
+
+      this.chartAxis.yAxises.forEach((axis, idx) =>
+        axis.forEach(
+          (_, dotId) => generate(dotId, idx)
+        ))
 
       this.reqAnimate()
     }

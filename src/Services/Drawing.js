@@ -25,7 +25,7 @@ class Drawing {
    * @param {String} color?
    * @param {number} lineWidth?
    */
-  drawALine (start, end, color = 'rgba(255, 153, 255, 0.8)', lineWidth = 2) {
+  drawALine (start, end, color = 'rgba(0, 0, 0, 0.8)', lineWidth = 2) {
     this.ctx.strokeStyle = color
     this.ctx.lineWidth = lineWidth
 
