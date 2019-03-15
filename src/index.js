@@ -13,16 +13,18 @@ import './styles/index.scss'
 
 let currentPlotId = 0
 
+const parsed = JSON.parse(Data)[0]
+
 const initPlot = (height = 600, width = 1000, canvasRef) => {
   const drawingServ = new Drawing(canvasRef, width, height)
 
-  const parsed = JSON.parse(Data)
 
-  const amount = 100
+
+  let amount = 10
 
   const chartb = new ChartDrawing(height, width, ChartAxis.execute(
-    parsed[0].columns[0].slice(1, amount + 1),
-    parsed[0].columns.slice(1).map(axis => axis.slice(1, amount + 1))
+    parsed.columns[0].slice(1, amount + 1),
+    parsed.columns.slice(1).map(axis => axis.slice(1, amount + 1))
   ))
 
   chartb.EasingService = Easing.easeInOut
@@ -30,7 +32,7 @@ const initPlot = (height = 600, width = 1000, canvasRef) => {
 
   drawingServ.clearCanvas()
 
-  chartb.initialDraw(Object.values(parsed[0].colors))
+  chartb.initialDraw(Object.values(parsed.colors))
 
   console.log({
     parsed,
@@ -39,14 +41,16 @@ const initPlot = (height = 600, width = 1000, canvasRef) => {
 
   let cur = 0
 
-  const anim = () => {
+  const anim = checked => {
     // cur = cur >= 4 ? 0 : cur + 1
-    cur = cur === 0 ? 4 : 0
+    // cur = cur === 0 ? 4 : 0
 
     chartb.updateData(ChartAxis.execute(
-      parsed[cur].columns[0].slice(1, amount + 1),
-      parsed[cur].columns.slice(1).map(axis => axis.slice(1, amount + 1))
-    ), Object.values(parsed[cur].colors))()
+      parsed.columns[0].slice(1, amount + 1),
+      parsed.columns.slice(1)
+        .filter((_, idx) => checked.includes(idx))
+        .map(axis => axis.slice(1, amount + 1))
+    ), Object.values(parsed.colors))()
   }
 
   // setTimeout(anim, 1500)
@@ -58,11 +62,12 @@ const initPlot = (height = 600, width = 1000, canvasRef) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const buttonsDiv = document.querySelector('.buttons')
-  let checkedButtons = []
-  const btns = new Buttons([
-    Button.execute('Name here', 1, '#f00'),
-    Button.execute('Name here 2', 2, '#ff0'),
-  ], buttonsDiv, checkedButtons)
+  let checkedButtons = Object.values(parsed.names).map((_, idx) => idx)
+  const buttonsArray = Object.values(parsed.names).map((name, idx) =>
+    Button.execute('Name ' + name, idx, Object.values(parsed.colors)[idx])
+  )
+
+  const btns = new Buttons(buttonsArray, buttonsDiv, checkedButtons)
 
   const updBig = initPlot(600, 1000, document.getElementById('canvas1'))
   // const updSmall = initPlot(70, 1000, document.getElementById('canvas2'))
@@ -77,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btns.buttonsSelected = checkedButtons
 
-    updBig()
+    updBig(checkedButtons)
     // updSmall()
   }
 

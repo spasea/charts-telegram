@@ -4,6 +4,8 @@ class ChartDrawing {
   _DrawingService = null
   _EasingService = null
   _reqQuery = {}
+  currentColors = []
+  previousColors = []
 
   constructor (height, width, chartAxis, xOffset = 4, yOffset = 8) {
     this.height = height
@@ -51,6 +53,8 @@ class ChartDrawing {
   }
 
   initialDraw (colors) {
+    this.currentColors = [...colors]
+    this.previousColors = [...colors]
     this.biggestX = this.chartAxis.xAxis.length
     const yArray = this.chartAxis.yAxises.reduce((acc, axis) => [
       ...acc,
@@ -79,7 +83,7 @@ class ChartDrawing {
         const startCoordinates = new Coordinates(currentX, point)
         const endCoordinates = new Coordinates(nextX, nextY)
 
-        this.DrawingService.drawALine(startCoordinates, endCoordinates, colors[axisId])
+        this.DrawingService.drawALine(startCoordinates, endCoordinates, this.currentColors[axisId])
       })
     })
 
@@ -93,6 +97,7 @@ class ChartDrawing {
 
   updateData (newAxis, colors) {
     // this.biggestX = Math.max(...newAxis.xAxis)
+
     this.biggestX = newAxis.xAxis.length
     const yArray = newAxis.yAxises.reduce((acc, axis) => [
       ...acc,
@@ -102,8 +107,9 @@ class ChartDrawing {
     this.biggestY = Math.max(...yArray)
     this.smallestY = Math.min(...yArray)
 
-    const previousAxis = {...this.previousAxis}
     this.previousAxis = {...this.chartAxis}
+    this.previousColors = [...this.currentColors]
+    this.currentColors = [...colors]
 
     this.chartAxis = {
       xAxis: newAxis.xAxis.map((_, idx) => this.scaleX(idx)),

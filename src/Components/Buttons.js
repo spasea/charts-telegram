@@ -61,6 +61,11 @@ class Buttons {
     buttonElement.innerHTML += button.name
 
     buttonElement.classList.add(this.classNames.default)
+
+    if (this.buttonsSelected.includes(button.id)) {
+      buttonElement.classList.add(this.classNames.checked)
+    }
+
     buttonElement.dataset.id = button.id
     buttonElement.addEventListener('click', () => {
       this.componentUpdate(button.id)
