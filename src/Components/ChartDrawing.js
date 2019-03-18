@@ -158,10 +158,10 @@ class ChartDrawing {
         this.chartAxis.yAxises.push(...Array(diff).fill(Array(length).fill(null)))
       }
 
-      console.log({
-        pr: this.previousAxis.yAxises,
-        ch: this.chartAxis.yAxises
-      })
+      // console.log({
+      //   pr: this.previousAxis.yAxises,
+      //   ch: this.chartAxis.yAxises
+      // })
 
       this.chartAxis.yAxises.forEach((axis, idx) =>
         axis.forEach(
