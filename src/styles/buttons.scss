@@ -1,0 +1,78 @@
+.buttons {
+  display: flex;
+  align-items: center;
+  flex-flow: row wrap;
+}
+
+.chart-button {
+  --primary-color: #f00;
+  transition: $base-transition;
+  display: flex;
+  align-items: center;
+  outline: none;
+  background: none;
+  border: 1px #f3f3f6 solid;
+  //border-color: #f00;
+  overflow: hidden;
+  padding: 6px 17px 6px 6px;
+  margin-right: 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  line-height: 16px;
+
+  &--is-checked {
+    .chart-button {
+      &__checkbox {
+        &:after {
+          height: 0;
+          width: 0;
+        }
+
+        &:before {
+          height: 8px;
+          width: 11px;
+        }
+      }
+    }
+  }
+
+  &__checkbox {
+    height: 20px;
+    width: 20px;
+    transition: $base-transition;
+    position: relative;
+    border-radius: 50%;
+    border: 1px solid var(--primary-color);
+    background: var(--primary-color);
+    margin-right: 10px;
+    box-sizing: border-box;
+
+    &:after {
+      content: '';
+      z-index: 2;
+      height: 16px;
+      width: 16px;
+      transition: $base-transition;
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &:before {
+      content: '';
+      z-index: 1;
+      height: 0;
+      width: 0;
+      background: url(../icons/check-icon.png) center no-repeat;
+      background-size: contain;
+      transition: $base-transition;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
