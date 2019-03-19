@@ -1,3 +1,4 @@
+import ChartAxis from '../DTO/ChartAxis'
 import ChartInfo from '../DTO/ChartInfo'
 import Drawing from '../Services/Drawing'
 import ChartDrawing from './ChartDrawing'
@@ -7,7 +8,7 @@ class ChartBoard {
   _DrawingService = null
   _reqQuery = {}
 
-  constructor (chartData, drawingService, options) {
+  constructor (chartData, drawingService, easingService, options) {
     options = {
       mainChartInfo: ChartInfo.execute(400, 600, null),
       previewChartInfo: ChartInfo.execute(40, 600, null),
@@ -17,26 +18,29 @@ class ChartBoard {
 
     this.chartData = chartData
     this._DrawingService = drawingService
+    this._EasingService = easingService
     this.time = options.animationTime
     this.mainChartInfo = options.mainChartInfo
 
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
-      chartAxis: {
-        xAxis: this.chartData.columns[0].slice(1),
-        yAxis: this.chartData.columns.slice(1).map(column => column.slice(1))
-      }
+      chartAxis: ChartAxis.execute(
+        this.chartData.columns[0].slice(1, 10),
+        this.chartData.columns.slice(1).map(column => column.slice(1, 10))
+      )
     })
     this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
     this.mainChartInfo.chartDrawing.initialDraw(Object.values(this.chartData.colors))
 
     setTimeout(() => {
-      this.mainChartInfo.chartDrawing.updateData({
-        xAxis: this.chartData.columns[0].slice(1),
-        yAxis: [
-          this.chartData.columns[1].slice(1)
+      this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
+        this.chartData.columns[0].slice(1, 10),
+        [
+          this.chartData.columns[1].slice(1, 10)
         ]
-      }, Object.values(this.chartData.colors))()
+      ), Object.values(this.chartData.colors))()
+
+      this.reqAnimate()
     }, 1000)
 
     // this.previewChartInfo = options.previewChartInfo
@@ -62,10 +66,10 @@ class ChartBoard {
     const currentFrameMethods = this._reqQuery[id]
 
     if (id !== (this.time - 1)) {
-      this.mainChartInfo.chartDrawing.DrawingService.DrawingService.clearCanvas()
+      this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
       // this.previewChartInfo.chartDrawing.DrawingService.DrawingService.clearCanvas()
     }
-    currentFrameMethods.forEach(dat => dat())
+    currentFrameMethods.forEach(method => method())
 
     id += 1
 

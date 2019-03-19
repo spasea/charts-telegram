@@ -1,8 +1,8 @@
 class ChartAxis {
-  static execute(xAxis = [], yAxises = []) {
+  static execute(xAxis = [], yAxis = []) {
     return {
       xAxis,
-      yAxises,
+      yAxis,
     }
   }
 }
