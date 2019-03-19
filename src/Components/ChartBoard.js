@@ -1,16 +1,49 @@
+import ChartInfo from '../DTO/ChartInfo'
+import Drawing from '../Services/Drawing'
+import ChartDrawing from './ChartDrawing'
+
 class ChartBoard {
   _EasingService = null
+  _DrawingService = null
   _reqQuery = {}
 
-  constructor (chartData, height, width, options) {
+  constructor (chartData, drawingService, options) {
     options = {
-      canvasRef: null,
+      mainChartInfo: ChartInfo.execute(400, 600, null),
+      previewChartInfo: ChartInfo.execute(40, 600, null),
       animationTime: 30,
       ...options
     }
 
     this.chartData = chartData
+    this._DrawingService = drawingService
     this.time = options.animationTime
+    this.mainChartInfo = options.mainChartInfo
+
+    this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
+      smoothTransition: this.smoothTransition,
+      chartAxis: {
+        xAxis: this.chartData.columns[0].slice(1),
+        yAxis: this.chartData.columns.slice(1).map(column => column.slice(1))
+      }
+    })
+    this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
+    this.mainChartInfo.chartDrawing.initialDraw(Object.values(this.chartData.colors))
+
+    setTimeout(() => {
+      this.mainChartInfo.chartDrawing.updateData({
+        xAxis: this.chartData.columns[0].slice(1),
+        yAxis: [
+          this.chartData.columns[1].slice(1)
+        ]
+      }, Object.values(this.chartData.colors))()
+    }, 1000)
+
+    // this.previewChartInfo = options.previewChartInfo
+    // this.previewChartInfo.chartDrawing = new this._DrawingService(this.previewChartInfo.height, this.previewChartInfo.width, {
+    //   smoothTransition: this.smoothTransition
+    // })
+    // this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
   }
 
   set EasingService (service) {
@@ -29,7 +62,8 @@ class ChartBoard {
     const currentFrameMethods = this._reqQuery[id]
 
     if (id !== (this.time - 1)) {
-      this.DrawingService.clearCanvas()
+      this.mainChartInfo.chartDrawing.DrawingService.DrawingService.clearCanvas()
+      // this.previewChartInfo.chartDrawing.DrawingService.DrawingService.clearCanvas()
     }
     currentFrameMethods.forEach(dat => dat())
 
@@ -40,7 +74,7 @@ class ChartBoard {
     })
   }
 
-  smoothTransition (previous, next, max = 60, cb) {
+  smoothTransition = (previous, next, max = 60, cb) => {
     const diff = next - previous
     let delta = 1
     let current = 0
@@ -55,7 +89,7 @@ class ChartBoard {
         return
       }
 
-      cb(findCurrentPosition(this.EasingService(time)))
+      cb(findCurrentPosition(this.EasingService))
 
       if (!this._reqQuery.hasOwnProperty(current)) {
         this._reqQuery[current] = []
