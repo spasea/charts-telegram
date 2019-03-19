@@ -18,7 +18,7 @@ const parsed = JSON.parse(Data)[0]
 const initPlot = (height = 600, width = 1000, canvasRef) => {
   const drawingServ = new Drawing(canvasRef, width, height)
 
-
+  return
 
   let amount = 10
 

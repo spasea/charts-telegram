@@ -2,48 +2,35 @@ import Coordinates from '../DTO/Coordinates'
 
 class ChartDrawing {
   _DrawingService = null
-  _EasingService = null
-  _reqQuery = {}
-  currentColors = []
-  previousColors = []
+  biggestX = 0
+  biggestY = 0
+  smallestY = 0
+  time = 30
 
-  constructor (height, width, chartAxis, xOffset = 4, yOffset = 8) {
+  constructor (height, width, options = {}) {
+    options = {
+      smoothTransition: () => {},
+      chartAxis: [],
+      xOffset: 4,
+      yOffset: 8,
+      ...options
+    }
+
     this.height = height
     this.width = width
-    this.chartAxis = chartAxis
-    this.previousAxis = chartAxis
-    this.biggestX = 0
-    this.biggestY = 0
-    this.smallestY = 0
-    this.xOffset = xOffset
-    this.yOffset = yOffset
-    this.time = 30
+    this.chartAxis = options.chartAxis
+    this.previousAxis = options.chartAxis
+    this.xOffset = options.xOffset
+    this.yOffset = options.yOffset
+    this.smoothTransition = options.smoothTransition
   }
 
-  /**
-   *
-   * @param {Drawing} service
-   * @constructor
-   */
   set DrawingService (service) {
     this._DrawingService = service
   }
 
-  /**
-   *
-   * @returns {Drawing}
-   * @constructor
-   */
   get DrawingService () {
     return this._DrawingService
-  }
-
-  set EasingService (service) {
-    this._EasingService = service
-  }
-
-  get EasingService () {
-    return this._EasingService
   }
 
   scaleX = x => x * (this.width - this.xOffset) / this.biggestX
@@ -54,8 +41,6 @@ class ChartDrawing {
   }
 
   initialDraw (colors) {
-    this.currentColors = [...colors]
-    this.previousColors = [...colors]
     this.biggestX = this.chartAxis.xAxis.length
     const yArray = this.chartAxis.yAxises.reduce((acc, axis) => [
       ...acc,
@@ -84,16 +69,9 @@ class ChartDrawing {
         const startCoordinates = new Coordinates(currentX, point)
         const endCoordinates = new Coordinates(nextX, nextY)
 
-        this.DrawingService.drawALine(startCoordinates, endCoordinates, this.currentColors[axisId])
+        this.DrawingService.drawALine(startCoordinates, endCoordinates, colors[axisId])
       })
     })
-
-    // const generate = id => {
-    //   const x = this.chartAxis.xAxis[id]
-    //   this.DrawingService.drawADot(new Coordinates(x, this.chartAxis.yAxises[0][id]), 2, color)
-    // }
-
-    // this.chartAxis.xAxis.forEach((_, idx) => generate(idx))
   }
 
   updateData (newAxis, colors) {
@@ -109,8 +87,6 @@ class ChartDrawing {
     this.smallestY = Math.min(...yArray)
 
     this.previousAxis = {...this.chartAxis}
-    this.previousColors = [...this.currentColors]
-    this.currentColors = [...colors]
 
     this.chartAxis = {
       xAxis: newAxis.xAxis.map((_, idx) => this.scaleX(idx)),
@@ -129,20 +105,13 @@ class ChartDrawing {
         this.chartAxis.yAxises[axisId] ? this.chartAxis.yAxises[axisId][id + 1] : offset
       ]
 
-      // console.log({
-      //   start,
-      //   end,
-      //   pr: this.previousAxis.yAxises[0],
-      //   cur: this.chartAxis.yAxises[0]
-      // })
-
       const startX = this.chartAxis.xAxis[id]
       const endX = this.chartAxis.xAxis[id + 1]
       let startY
-      this.calculateADynamic(...start, this.time, val => {
+      this.smoothTransition(...start, this.time, val => {
         startY = val
       })()
-      this.calculateADynamic(...end, this.time, endY => {
+      this.smoothTransition(...end, this.time, endY => {
         startY = startY < 0.1 ? -1 : startY
         endY = endY < 0.1 ? -1 : endY
 
@@ -151,75 +120,17 @@ class ChartDrawing {
     }
 
     return () => {
-      this.DrawingService.clearCanvas()
-
       if (this.chartAxis.yAxises.length < this.previousAxis.yAxises.length) {
         const diff = this.previousAxis.yAxises.length - this.chartAxis.yAxises.length
         const length = this.chartAxis.yAxises[0].length
         this.chartAxis.yAxises.push(...Array(diff).fill(Array(length).fill(null)))
       }
 
-      // console.log({
-      //   pr: this.previousAxis.yAxises,
-      //   ch: this.chartAxis.yAxises
-      // })
-
       this.chartAxis.yAxises.forEach((axis, idx) =>
         axis.forEach(
           (_, dotId) => generate(dotId, idx)
         ))
-
-      this.reqAnimate()
     }
-  }
-
-  reqAnimate (id = 1) {
-    if (id > Object.keys(this._reqQuery).length) {
-      return
-    }
-
-    const currentFrameMethods = this._reqQuery[id]
-
-    if (id !== (this.time - 1)) {
-      this.DrawingService.clearCanvas()
-    }
-    currentFrameMethods.forEach(dat => dat.meth())
-
-    id += 1
-
-    requestAnimationFrame(() => {
-      this.reqAnimate(id)
-    })
-  }
-
-  calculateADynamic (previous, next, max = 60, cb) {
-    const diff = next - previous
-    let delta = 1
-    let current = 0
-
-    const findCurrentPosition = time => previous + diff * time
-
-    const method = () => {
-      current += delta
-      const time = current / max
-
-      if (time >= 1) {
-        return
-      }
-
-      cb(findCurrentPosition(this.EasingService(time)))
-
-      if (!this._reqQuery.hasOwnProperty(current)) {
-        this._reqQuery[current] = []
-      }
-
-      this._reqQuery[current].push({
-        meth: method,
-        data: findCurrentPosition(this.EasingService(time))
-      })
-    }
-
-    return method
   }
 }
 
