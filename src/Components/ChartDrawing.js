@@ -17,6 +17,7 @@ class ChartDrawing {
     this.smallestY = 0
     this.xOffset = xOffset
     this.yOffset = yOffset
+    this.time = 30
   }
 
   /**
@@ -138,12 +139,12 @@ class ChartDrawing {
       const startX = this.chartAxis.xAxis[id]
       const endX = this.chartAxis.xAxis[id + 1]
       let startY
-      this.calculateADynamic(...start, 60, val => {
+      this.calculateADynamic(...start, this.time, val => {
         startY = val
       })()
-      this.calculateADynamic(...end, 60, endY => {
-        startY = startY < 0.01 ? -1 : startY
-        endY = endY < 0.01 ? -1 : endY
+      this.calculateADynamic(...end, this.time, endY => {
+        startY = startY < 0.1 ? -1 : startY
+        endY = endY < 0.1 ? -1 : endY
 
         this.DrawingService.drawALine(new Coordinates(startX, startY), new Coordinates(endX, endY), colors[axisId])
       })()
@@ -179,7 +180,7 @@ class ChartDrawing {
 
     const currentFrameMethods = this._reqQuery[id]
 
-    if (id !== 59) {
+    if (id !== (this.time - 1)) {
       this.DrawingService.clearCanvas()
     }
     currentFrameMethods.forEach(dat => dat.meth())
