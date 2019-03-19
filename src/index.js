@@ -15,6 +15,10 @@ let currentPlotId = 0
 
 const parsed = JSON.parse(Data)[0]
 
+console.log({
+  parsed
+})
+
 const initPlot = (height = 600, width = 1000, canvasRef) => {
   const drawingServ = new Drawing(canvasRef, width, height)
 
@@ -61,34 +65,36 @@ const initPlot = (height = 600, width = 1000, canvasRef) => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const buttonsDiv = document.querySelector('.buttons')
-  let checkedButtons = Object.values(parsed.names).map((_, idx) => idx)
-  const buttonsArray = Object.values(parsed.names).map((name, idx) =>
-    Button.execute('Name ' + name, idx, Object.values(parsed.colors)[idx])
-  )
+  // const buttonsDiv = document.querySelector('.buttons')
+  // let checkedButtons = Object.values(parsed.names).map((_, idx) => idx)
+  // const buttonsArray = Object.values(parsed.names).map((name, idx) =>
+  //   Button.execute('Name ' + name, idx, Object.values(parsed.colors)[idx])
+  // )
+  //
+  // const btns = new Buttons(buttonsArray, buttonsDiv, checkedButtons)
+  //
+  // const updBig = initPlot(600, 1000, document.getElementById('canvas1'))
+  // // const updSmall = initPlot(70, 1000, document.getElementById('canvas2'))
+  //
+  // btns.componentUpdate = id => {
+  //   checkedButtons = checkedButtons.includes(id)
+  //     ? checkedButtons.filter(buttonId => buttonId !== id)
+  //     : [
+  //       ...checkedButtons,
+  //       id
+  //     ]
+  //
+  //   btns.buttonsSelected = checkedButtons
+  //
+  //   updBig(checkedButtons)
+  //   // updSmall()
+  // }
+  //
+  // btns.DomService = Dom
+  // btns.renders()
 
-  const btns = new Buttons(buttonsArray, buttonsDiv, checkedButtons)
 
-  const updBig = initPlot(600, 1000, document.getElementById('canvas1'))
-  // const updSmall = initPlot(70, 1000, document.getElementById('canvas2'))
-
-  btns.componentUpdate = id => {
-    checkedButtons = checkedButtons.includes(id)
-      ? checkedButtons.filter(buttonId => buttonId !== id)
-      : [
-        ...checkedButtons,
-        id
-      ]
-
-    btns.buttonsSelected = checkedButtons
-
-    updBig(checkedButtons)
-    // updSmall()
-  }
-
-  btns.DomService = Dom
-  btns.renders()
-
+  // const
 
 
 
