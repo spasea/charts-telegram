@@ -1,8 +1,10 @@
 import Button from '../DTO/Button'
 import ChartAxis from '../DTO/ChartAxis'
 import ChartInfo from '../DTO/ChartInfo'
+import RangeInfo from '../DTO/RangeInfo'
 import Drawing from '../Services/Drawing'
 import Buttons from './Buttons'
+import Range from './Range'
 import ChartDrawing from './ChartDrawing'
 
 class ChartBoard {
@@ -15,6 +17,7 @@ class ChartBoard {
     options = {
       mainChartInfo: ChartInfo.execute(400, 600, null),
       previewChartInfo: ChartInfo.execute(40, 600, null),
+      rangeInfo: RangeInfo.execute(40, 600, null),
       buttonsParent: null,
       animationTime: 30,
       ...options
@@ -26,10 +29,12 @@ class ChartBoard {
     this.time = options.animationTime
     this.mainChartInfo = options.mainChartInfo
     this.previewChartInfo = options.previewChartInfo
+    this.rangeInfo = options.rangeInfo
     this.buttonsParent = options.buttonsParent
 
     this.initCharts()
-    this.initButtons()
+    // this.initButtons()
+    this.initRange()
   }
 
   set EasingService (service) {
@@ -38,6 +43,20 @@ class ChartBoard {
 
   get EasingService () {
     return this._EasingService
+  }
+
+  initRange () {
+    const maxValue = this.chartData.columns[0].length - 1
+    const range = new Range(this.rangeInfo.height, this.rangeInfo.width, maxValue, 0, {
+      rangesRef: this.rangeInfo.rangesRef
+    })
+
+    range.DomService = this._DomService
+    range.renders()
+
+    console.log({
+      range
+    })
   }
 
   initCharts () {

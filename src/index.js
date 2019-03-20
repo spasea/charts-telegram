@@ -2,6 +2,7 @@ import Data from './chart_data'
 
 import ChartBoard from './Components/ChartBoard'
 import ChartInfo from './DTO/ChartInfo'
+import RangeInfo from './DTO/RangeInfo'
 import Dom from './Services/Dom'
 import Drawing from './Services/Drawing'
 import Easing from './Services/Easing'
@@ -21,9 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const parentClassName = `.plot-${idx + 1}`
     const canvasRef1 = document.querySelector(`${parentClassName} .canvas1`)
     const canvasRef2 = document.querySelector(`${parentClassName} .canvas2`)
+    const rangesRef = document.querySelector(`${parentClassName} .range`)
     const board1 = new ChartBoard(data, Drawing, Dom, {
       mainChartInfo: ChartInfo.execute(310, 600, canvasRef1),
       previewChartInfo: ChartInfo.execute(40, 600, canvasRef2),
+      rangeInfo: RangeInfo.execute(40, 600, rangesRef),
       buttonsParent: document.querySelector(`${parentClassName} .buttons`)
     })
 
