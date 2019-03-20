@@ -40,7 +40,7 @@ class Buttons {
     return this._DomService
   }
 
-  componentWillUpdate () {
+  _componentWillUpdate () {
     this.buttonsContainer.childNodes.forEach(button => {
       const buttonId = button.dataset.id
       const isChecked = this.buttonsSelected.includes(buttonId)
@@ -69,7 +69,7 @@ class Buttons {
     buttonElement.dataset.id = button.id
     buttonElement.addEventListener('click', () => {
       this.componentUpdate(button.id)
-      this.componentWillUpdate()
+      this._componentWillUpdate()
     })
     buttonElement.style.setProperty(this.primaryColorName, button.color)
 
