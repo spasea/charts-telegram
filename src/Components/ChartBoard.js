@@ -101,7 +101,9 @@ class ChartBoard {
       const amount = 20
       this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
         this.chartData.columns[0].slice(1, amount),
-        this.chartData.columns.slice(1).filter(column => checkedIds.includes(column[0]))
+        this.chartData.columns.slice(1)
+          .filter(column => checkedIds.includes(column[0]))
+          .map(column => column.slice(0, amount))
       ), this.chartData.colors)()
 
       this.reqAnimate()
