@@ -34,7 +34,7 @@ class ChartBoard {
 
     this.initCharts()
     // this.initButtons()
-    this.initRange()
+    // this.initRange()
   }
 
   set EasingService (service) {
@@ -50,15 +50,27 @@ class ChartBoard {
     // const maxValue = 10
     const range = new Range(this.rangeInfo.height, this.rangeInfo.width, maxValue, 0, {
       rangesRef: this.rangeInfo.rangesRef,
-      range: [5, 7],
+      range: [5, 11],
     })
 
     range.DomService = this._DomService
-    range.renders()
 
-    console.log({
-      range
-    })
+    range.componentUpdate = values => {
+      values = values.map(Math.round)
+
+      console.log({
+        values
+      })
+
+      this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
+        this.chartData.columns[0].slice(...values),
+        this.chartData.columns.slice(1)
+      ), this.chartData.colors)()
+
+      this.reqAnimate()
+    }
+
+    range.renders()
   }
 
   initCharts () {
@@ -139,7 +151,7 @@ class ChartBoard {
 
     if (id !== (this.time - 1)) {
       this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
-      this.previewChartInfo.chartDrawing.DrawingService.clearCanvas()
+      // this.previewChartInfo.chartDrawing.DrawingService.clearCanvas()
     }
     currentFrameMethods.forEach(method => method())
 

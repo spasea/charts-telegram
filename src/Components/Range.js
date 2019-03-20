@@ -121,6 +121,8 @@ class Range {
     const width = this.getScale(diff)
     this._elements.middleInput.style.setProperty(this.customProps.thumbScale, width / 4)
     this._elements.middleInput.value = (this.range[1] + this.range[0]) / 2
+
+    this.componentUpdate(this.range)
   }
 
   renders () {
