@@ -25,16 +25,11 @@ class ChartBoard {
     this._DomService = domService
     this.time = options.animationTime
     this.mainChartInfo = options.mainChartInfo
+    this.previewChartInfo = options.previewChartInfo
     this.buttonsParent = options.buttonsParent
 
     this.initMainChart()
     this.initButtons()
-
-    // this.previewChartInfo = options.previewChartInfo
-    // this.previewChartInfo.chartDrawing = new this._DrawingService(this.previewChartInfo.height, this.previewChartInfo.width, {
-    //   smoothTransition: this.smoothTransition
-    // })
-    // this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
   }
 
   set EasingService (service) {
@@ -47,39 +42,24 @@ class ChartBoard {
 
   initMainChart () {
     const amount = 20
+    const chartAxis = ChartAxis.execute(
+      this.chartData.columns[0].slice(1, amount),
+      this.chartData.columns.slice(1).map(column => column.slice(0, amount))
+    )
 
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
-      chartAxis: ChartAxis.execute(
-        this.chartData.columns[0].slice(1, amount),
-        this.chartData.columns.slice(1).map(column => column.slice(0, amount))
-      )
+      chartAxis
     })
     this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
     this.mainChartInfo.chartDrawing.initialDraw(this.chartData.colors)
 
-    setTimeout(() => {
-      return
-      this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
-        this.chartData.columns[0].slice(1, amount),
-        [
-          this.chartData.columns[1].slice(0, amount)
-        ]
-      ), this.chartData.colors)()
-
-      this.reqAnimate()
-
-      setTimeout(() => {
-        this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
-          this.chartData.columns[0].slice(1, amount),
-          [
-            this.chartData.columns[2].slice(0, amount)
-          ]
-        ), this.chartData.colors)()
-
-        this.reqAnimate()
-      }, 2000)
-    }, 2000)
+    this.previewChartInfo.chartDrawing = new ChartDrawing(this.previewChartInfo.height, this.previewChartInfo.width, {
+      smoothTransition: this.smoothTransition,
+      chartAxis
+    })
+    this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
+    this.previewChartInfo.chartDrawing.initialDraw(this.chartData.colors)
   }
 
   initButtons () {
@@ -99,12 +79,15 @@ class ChartBoard {
 
     const updatePlot = checkedIds => {
       const amount = 20
-      this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
+      const newData = ChartAxis.execute(
         this.chartData.columns[0].slice(1, amount),
         this.chartData.columns.slice(1)
           .filter(column => checkedIds.includes(column[0]))
           .map(column => column.slice(0, amount))
-      ), this.chartData.colors)()
+      )
+
+      this.mainChartInfo.chartDrawing.updateData(newData, this.chartData.colors)()
+      this.previewChartInfo.chartDrawing.updateData(newData, this.chartData.colors)()
 
       this.reqAnimate()
     }
@@ -134,7 +117,7 @@ class ChartBoard {
 
     if (id !== (this.time - 1)) {
       this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
-      // this.previewChartInfo.chartDrawing.DrawingService.DrawingService.clearCanvas()
+      this.previewChartInfo.chartDrawing.DrawingService.clearCanvas()
     }
     currentFrameMethods.forEach(method => method())
 
