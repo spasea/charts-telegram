@@ -6,7 +6,7 @@ class Buttons {
    *
    * @param {{name, id, color}[]} buttons
    * @param {Element} buttonsContainer
-   * @param {number[]} buttonsSelected
+   * @param {string[]} buttonsSelected
    */
   constructor (buttons, buttonsContainer, buttonsSelected) {
     this.buttons = buttons
@@ -42,7 +42,7 @@ class Buttons {
 
   componentWillUpdate () {
     this.buttonsContainer.childNodes.forEach(button => {
-      const buttonId = +button.dataset.id
+      const buttonId = button.dataset.id
       const isChecked = this.buttonsSelected.includes(buttonId)
       button.classList[isChecked ? 'add' : 'remove'](this.classNames.checked)
     })

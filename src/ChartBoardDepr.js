@@ -1,4 +1,4 @@
-class ChartBoard {
+class ChartBoardDepr {
   data = {
     columns: [],
     types: {},
@@ -180,4 +180,4 @@ class ChartBoard {
   }
 }
 
-export default ChartBoard
+export default ChartBoardDepr
