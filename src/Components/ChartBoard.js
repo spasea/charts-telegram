@@ -1,26 +1,51 @@
+import Button from '../DTO/Button'
 import ChartAxis from '../DTO/ChartAxis'
 import ChartInfo from '../DTO/ChartInfo'
 import Drawing from '../Services/Drawing'
+import Buttons from './Buttons'
 import ChartDrawing from './ChartDrawing'
 
 class ChartBoard {
   _EasingService = null
   _DrawingService = null
+  _DomService = null
   _reqQuery = {}
 
-  constructor (chartData, drawingService, options) {
+  constructor (chartData, drawingService, domService, options) {
     options = {
       mainChartInfo: ChartInfo.execute(400, 600, null),
       previewChartInfo: ChartInfo.execute(40, 600, null),
+      buttonsParent: null,
       animationTime: 30,
       ...options
     }
 
     this.chartData = chartData
     this._DrawingService = drawingService
+    this._DomService = domService
     this.time = options.animationTime
     this.mainChartInfo = options.mainChartInfo
+    this.buttonsParent = options.buttonsParent
 
+    this.initMainChart()
+    this.initButtons()
+
+    // this.previewChartInfo = options.previewChartInfo
+    // this.previewChartInfo.chartDrawing = new this._DrawingService(this.previewChartInfo.height, this.previewChartInfo.width, {
+    //   smoothTransition: this.smoothTransition
+    // })
+    // this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
+  }
+
+  set EasingService (service) {
+    this._EasingService = service
+  }
+
+  get EasingService () {
+    return this._EasingService
+  }
+
+  initMainChart () {
     const amount = 20
 
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
@@ -34,6 +59,7 @@ class ChartBoard {
     this.mainChartInfo.chartDrawing.initialDraw(this.chartData.colors)
 
     setTimeout(() => {
+      return
       this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
         this.chartData.columns[0].slice(1, amount),
         [
@@ -54,20 +80,47 @@ class ChartBoard {
         this.reqAnimate()
       }, 2000)
     }, 2000)
-
-    // this.previewChartInfo = options.previewChartInfo
-    // this.previewChartInfo.chartDrawing = new this._DrawingService(this.previewChartInfo.height, this.previewChartInfo.width, {
-    //   smoothTransition: this.smoothTransition
-    // })
-    // this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
   }
 
-  set EasingService (service) {
-    this._EasingService = service
-  }
+  initButtons () {
+    let checkedButtons = Object.keys(this.chartData.names)
+    const buttonsArray = []
 
-  get EasingService () {
-    return this._EasingService
+    for (let key in this.chartData.names) {
+      const name = this.chartData.names[key]
+
+      buttonsArray.push(
+        Button.execute(name, key, this.chartData.colors[key])
+      )
+    }
+
+    const btns = new Buttons(buttonsArray, this.buttonsParent, checkedButtons)
+    btns.DomService = this._DomService
+
+    const updatePlot = checkedIds => {
+      const amount = 20
+      this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
+        this.chartData.columns[0].slice(1, amount),
+        this.chartData.columns.slice(1).filter(column => checkedIds.includes(column[0]))
+      ), this.chartData.colors)()
+
+      this.reqAnimate()
+    }
+
+    btns.componentUpdate = id => {
+      checkedButtons = checkedButtons.includes(id)
+        ? checkedButtons.filter(buttonId => buttonId !== id)
+        : [
+          ...checkedButtons,
+          id
+        ]
+
+      btns.buttonsSelected = checkedButtons
+
+      updatePlot(checkedButtons)
+    }
+
+    btns.renders()
   }
 
   reqAnimate (id = 1) {

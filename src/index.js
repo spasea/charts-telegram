@@ -95,8 +95,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // btns.renders()
 
   const canvasRef = document.getElementById('canvas1')
-  const board1 = new ChartBoard(parsed, Drawing, {
-    mainChartInfo: ChartInfo.execute(400, 600, canvasRef)
+  const board1 = new ChartBoard(parsed, Drawing, Dom, {
+    mainChartInfo: ChartInfo.execute(400, 600, canvasRef),
+    buttonsParent: document.querySelector('.buttons')
   })
 
   board1.EasingService = Easing.easeInOut
