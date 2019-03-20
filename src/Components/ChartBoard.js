@@ -42,21 +42,22 @@ class ChartBoard {
 
   initMainChart () {
     const amount = 20
-    const chartAxis = ChartAxis.execute(
+    const getNewData = (amount = 1000000) => ChartAxis.execute(
       this.chartData.columns[0].slice(1, amount),
-      this.chartData.columns.slice(1).map(column => column.slice(0, amount))
+      this.chartData.columns.slice(1)
+        .map(column => column.slice(0, amount))
     )
 
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
-      chartAxis
+      chartAxis: getNewData(amount)
     })
     this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
     this.mainChartInfo.chartDrawing.initialDraw(this.chartData.colors)
 
     this.previewChartInfo.chartDrawing = new ChartDrawing(this.previewChartInfo.height, this.previewChartInfo.width, {
       smoothTransition: this.smoothTransition,
-      chartAxis
+      chartAxis: getNewData()
     })
     this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
     this.previewChartInfo.chartDrawing.initialDraw(this.chartData.colors)
@@ -79,15 +80,15 @@ class ChartBoard {
 
     const updatePlot = checkedIds => {
       const amount = 20
-      const newData = ChartAxis.execute(
+      const getNewData = (amount = 1000000) => ChartAxis.execute(
         this.chartData.columns[0].slice(1, amount),
         this.chartData.columns.slice(1)
           .filter(column => checkedIds.includes(column[0]))
           .map(column => column.slice(0, amount))
       )
 
-      this.mainChartInfo.chartDrawing.updateData(newData, this.chartData.colors)()
-      this.previewChartInfo.chartDrawing.updateData(newData, this.chartData.colors)()
+      this.mainChartInfo.chartDrawing.updateData(getNewData(amount), this.chartData.colors)()
+      this.previewChartInfo.chartDrawing.updateData(getNewData(), this.chartData.colors)()
 
       this.reqAnimate()
     }
