@@ -8,7 +8,7 @@ class ChartBoard {
   _DrawingService = null
   _reqQuery = {}
 
-  constructor (chartData, drawingService, easingService, options) {
+  constructor (chartData, drawingService, options) {
     options = {
       mainChartInfo: ChartInfo.execute(400, 600, null),
       previewChartInfo: ChartInfo.execute(40, 600, null),
@@ -18,30 +18,42 @@ class ChartBoard {
 
     this.chartData = chartData
     this._DrawingService = drawingService
-    this._EasingService = easingService
     this.time = options.animationTime
     this.mainChartInfo = options.mainChartInfo
+
+    const amount = 20
 
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
       chartAxis: ChartAxis.execute(
-        this.chartData.columns[0].slice(1, 10),
-        this.chartData.columns.slice(1).map(column => column.slice(1, 10))
+        this.chartData.columns[0].slice(1, amount),
+        this.chartData.columns.slice(1).map(column => column.slice(0, amount))
       )
     })
     this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
-    this.mainChartInfo.chartDrawing.initialDraw(Object.values(this.chartData.colors))
+    this.mainChartInfo.chartDrawing.initialDraw(this.chartData.colors)
 
     setTimeout(() => {
       this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
-        this.chartData.columns[0].slice(1, 10),
+        this.chartData.columns[0].slice(1, amount),
         [
-          this.chartData.columns[1].slice(1, 10)
+          this.chartData.columns[1].slice(0, amount)
         ]
-      ), Object.values(this.chartData.colors))()
+      ), this.chartData.colors)()
 
       this.reqAnimate()
-    }, 1000)
+
+      setTimeout(() => {
+        this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
+          this.chartData.columns[0].slice(1, amount),
+          [
+            this.chartData.columns[2].slice(0, amount)
+          ]
+        ), this.chartData.colors)()
+
+        this.reqAnimate()
+      }, 2000)
+    }, 2000)
 
     // this.previewChartInfo = options.previewChartInfo
     // this.previewChartInfo.chartDrawing = new this._DrawingService(this.previewChartInfo.height, this.previewChartInfo.width, {
@@ -93,7 +105,7 @@ class ChartBoard {
         return
       }
 
-      cb(findCurrentPosition(this.EasingService))
+      cb(findCurrentPosition(this.EasingService(time)))
 
       if (!this._reqQuery.hasOwnProperty(current)) {
         this._reqQuery[current] = []

@@ -40,9 +40,19 @@ class ChartDrawing {
     return (y - this.smallestY + 1) * (this.height - this.yOffset) / diff + this.yOffset - 6
   }
 
+  processYAxis (axis) {
+    const object = {}
+    axis.forEach(item => {
+      object[item[0]] = item.slice(1)
+    })
+
+    return object
+  }
+
   initialDraw (colors) {
     this.biggestX = this.chartAxis.xAxis.length
-    const yArray = this.chartAxis.yAxis.reduce((acc, axis) => [
+    const yAxis = this.processYAxis(this.chartAxis.yAxis)
+    const yArray = Object.values(yAxis).reduce((acc, axis) => [
       ...acc,
       ...axis
     ], [])
@@ -52,10 +62,18 @@ class ChartDrawing {
 
     this.chartAxis = {
       xAxis: this.chartAxis.xAxis.map((_, idx) => this.scaleX(idx)),
-      yAxis: this.chartAxis.yAxis.map(axis => axis.map(this.scaleY))
+      yAxis: {}
     }
 
-    this.chartAxis.yAxis.forEach((axis, axisId) => {
+    for (let axisId in yAxis) {
+      const axis = yAxis[axisId]
+
+      this.chartAxis.yAxis[axisId] = axis.map(this.scaleY)
+    }
+
+    for (let axisId in this.chartAxis.yAxis) {
+      const axis = this.chartAxis.yAxis[axisId]
+
       axis.forEach((point, pointIdx) => {
         const nextY = this.chartAxis.yAxis[axisId][pointIdx + 1]
 
@@ -71,14 +89,15 @@ class ChartDrawing {
 
         this.DrawingService.drawALine(startCoordinates, endCoordinates, colors[axisId])
       })
-    })
+    }
   }
 
   updateData (newAxis, colors) {
     // this.biggestX = Math.max(...newAxis.xAxis)
 
     this.biggestX = newAxis.xAxis.length
-    const yArray = newAxis.yAxis.reduce((acc, axis) => [
+    const yAxis = this.processYAxis(newAxis.yAxis)
+    const yArray = Object.values(yAxis).reduce((acc, axis) => [
       ...acc,
       ...axis
     ], [])
@@ -90,7 +109,13 @@ class ChartDrawing {
 
     this.chartAxis = {
       xAxis: newAxis.xAxis.map((_, idx) => this.scaleX(idx)),
-      yAxis: newAxis.yAxis.map(axis => axis.map(this.scaleY))
+      yAxis: {}
+    }
+
+    for (let axisId in yAxis) {
+      const axis = yAxis[axisId]
+
+      this.chartAxis.yAxis[axisId] = axis.map(this.scaleY)
     }
 
     const generate = (id, axisId) => {
@@ -120,16 +145,24 @@ class ChartDrawing {
     }
 
     return () => {
-      if (this.chartAxis.yAxis.length < this.previousAxis.yAxis.length) {
-        const diff = this.previousAxis.yAxis.length - this.chartAxis.yAxis.length
-        const length = this.chartAxis.yAxis[0].length
-        this.chartAxis.yAxis.push(...Array(diff).fill(Array(length).fill(null)))
+      const currentKeys = Object.keys(this.chartAxis.yAxis)
+      const previousKeys = Object.keys(this.previousAxis.yAxis)
+      if (currentKeys.length < previousKeys.length) {
+        const missingKeys = previousKeys.filter(prevKey => !currentKeys.includes(prevKey))
+        const length = Object.values(this.previousAxis.yAxis)[0].length
+
+        missingKeys.forEach(key => {
+          this.chartAxis.yAxis[key] = Array(length).fill(null)
+        })
       }
 
-      this.chartAxis.yAxis.forEach((axis, idx) =>
+      for (let axisId in this.chartAxis.yAxis) {
+        const axis = this.chartAxis.yAxis[axisId]
+
         axis.forEach(
-          (_, dotId) => generate(dotId, idx)
-        ))
+          (_, dotId) => generate(dotId, axisId)
+        )
+      }
     }
   }
 }

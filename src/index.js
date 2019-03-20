@@ -95,15 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // btns.renders()
 
   const canvasRef = document.getElementById('canvas1')
-  const board1 = new ChartBoard(parsed, Drawing, Easing.easeInOut, {
+  const board1 = new ChartBoard(parsed, Drawing, {
     mainChartInfo: ChartInfo.execute(400, 600, canvasRef)
   })
 
-  setTimeout(() => {
-    console.log({
-      board1
-    })
-  }, 1500)
+  board1.EasingService = Easing.easeInOut
 
   // const canvasRef = document.getElementById('canvas')
   // const plotsContainer = document.getElementsByClassName('plots')[0]
