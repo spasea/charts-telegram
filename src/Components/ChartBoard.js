@@ -28,7 +28,7 @@ class ChartBoard {
     this.previewChartInfo = options.previewChartInfo
     this.buttonsParent = options.buttonsParent
 
-    this.initMainChart()
+    this.initCharts()
     this.initButtons()
   }
 
@@ -40,7 +40,7 @@ class ChartBoard {
     return this._EasingService
   }
 
-  initMainChart () {
+  initCharts () {
     const amount = 20
     const getNewData = (amount = 1000000) => ChartAxis.execute(
       this.chartData.columns[0].slice(1, amount),
