@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasRef1 = document.querySelector(`${parentClassName} .canvas1`)
     const canvasRef2 = document.querySelector(`${parentClassName} .canvas2`)
     const board1 = new ChartBoard(data, Drawing, Dom, {
-      mainChartInfo: ChartInfo.execute(310, 600, canvasRef1),
-      previewChartInfo: ChartInfo.execute(40, 600, canvasRef2),
+      mainChartInfo: ChartInfo.execute(310, 375, canvasRef1),
+      previewChartInfo: ChartInfo.execute(40, 375, canvasRef2),
       buttonsParent: document.querySelector(`${parentClassName} .buttons`)
     })
 
