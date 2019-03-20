@@ -47,8 +47,10 @@ class ChartBoard {
 
   initRange () {
     const maxValue = this.chartData.columns[0].length - 1
+    // const maxValue = 10
     const range = new Range(this.rangeInfo.height, this.rangeInfo.width, maxValue, 0, {
-      rangesRef: this.rangeInfo.rangesRef
+      rangesRef: this.rangeInfo.rangesRef,
+      range: [5, 7],
     })
 
     range.DomService = this._DomService

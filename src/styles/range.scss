@@ -4,9 +4,10 @@
   width: var(--width);
   height: var(--height);
   position: relative;
+  overflow: hidden;
   border: 1px solid #000;
 
-  #canvas2 {
+  canvas {
     position: absolute;
     z-index: -1;
   }
@@ -16,6 +17,7 @@
     background: none;
     width: 100%;
     height: calc(40px / 3);
+    pointer-events: none;
 
     &:focus {
       outline: none;
@@ -26,11 +28,13 @@
       cursor: pointer;
       background: red;
       height: 40px;
-      width: 5px;
+      width: 6px;
+      pointer-events: all;
     }
 
     &::-webkit-slider-runnable-track {
       height: calc(40px / 3);
+
     }
 
     &--is-smaller {
@@ -38,15 +42,20 @@
         background: none;
       }
       &::-webkit-slider-thumb {
-        transform: translateY(0);
+        transform: translateY(calc((40px / -3) * 1));
         background: yellow;
       }
     }
 
     &--is-middle {
+      --thumb-width: 4px;
       &::-webkit-slider-thumb {
-        transform: translateY(calc((40px / -3) * 1));
-        background: blue;
+
+        transform: translateY(0)  scaleX(var(--thumb-scale));
+        //background: none;
+        //border: 1px solid blue;
+        box-sizing: border-box;
+        background: rgba(blue, 0.4);
         width: var(--thumb-width);
       }
     }
@@ -56,7 +65,7 @@
         background: none;
       }
       &::-webkit-slider-thumb {
-        transform: translateY(calc((40px / -3) * 2));
+        transform: translateY(calc((40px / -3) * 2 + 1px));
       }
     }
   }
