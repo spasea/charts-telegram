@@ -12,12 +12,14 @@ class ChartBoard {
   _DrawingService = null
   _DomService = null
   _reqQuery = {}
+  range = []
 
   constructor (chartData, drawingService, domService, options) {
     options = {
       mainChartInfo: ChartInfo.execute(400, 600, null),
       previewChartInfo: ChartInfo.execute(40, 600, null),
       rangeInfo: RangeInfo.execute(40, 600, null),
+      rangeValues: [0, 20],
       buttonsParent: null,
       animationTime: 30,
       ...options
@@ -31,6 +33,7 @@ class ChartBoard {
     this.previewChartInfo = options.previewChartInfo
     this.rangeInfo = options.rangeInfo
     this.buttonsParent = options.buttonsParent
+    this.range = options.rangeValues
 
     this.initCharts()
     this.initButtons()
@@ -56,22 +59,17 @@ class ChartBoard {
     range.DomService = this._DomService
 
     range.componentUpdate = values => {
-      return
+      // return
 
       values = values.map(Math.round)
-
-      // values[0] = values[0] < 0 ? 0 : values[0]
-
-      console.log({
-        values: values[0]
-      })
+      this.range = [...values]
 
       this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
         this.chartData.columns[0].slice(1).slice(...values),
         this.chartData.columns.slice(1)
           .map(column => ([
             column[0],
-            ...column.slice(1).slice(...values)
+            ...column.slice(1).slice(...this.range)
           ]))
       ), this.chartData.colors)()
 
@@ -84,16 +82,15 @@ class ChartBoard {
   }
 
   initCharts () {
-    const amount = 20
-    const getNewData = (amount = 1000000) => ChartAxis.execute(
-      this.chartData.columns[0].slice(1, amount),
+    const getNewData = (range = [0, 1000000]) => ChartAxis.execute(
+      this.chartData.columns[0].slice(1).slice(...range),
       this.chartData.columns.slice(1)
-        .map(column => column.slice(0, amount))
+        .map(column => column.slice(...range))
     )
 
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
-      chartAxis: getNewData(amount)
+      chartAxis: getNewData(this.range)
     })
     this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
     this.mainChartInfo.chartDrawing.initialDraw(this.chartData.colors)
@@ -122,15 +119,17 @@ class ChartBoard {
     btns.DomService = this._DomService
 
     const updatePlot = checkedIds => {
-      const amount = 20
-      const getNewData = (amount = 1000000) => ChartAxis.execute(
-        this.chartData.columns[0].slice(1, amount),
+      const getNewData = (range = [0, 1000000]) => ChartAxis.execute(
+        this.chartData.columns[0].slice(1).slice(...range),
         this.chartData.columns.slice(1)
           .filter(column => checkedIds.includes(column[0]))
-          .map(column => column.slice(0, amount))
+          .map(column => ([
+            column[0],
+            ...column.slice(1).slice(...range)
+          ]))
       )
 
-      this.mainChartInfo.chartDrawing.updateData(getNewData(amount), this.chartData.colors)()
+      this.mainChartInfo.chartDrawing.updateData(getNewData(this.range), this.chartData.colors)()
       this.previewChartInfo.chartDrawing.updateData(getNewData(), this.chartData.colors)()
 
       this.reqAnimate(1, () => {
