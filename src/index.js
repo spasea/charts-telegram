@@ -19,7 +19,8 @@ console.log({
 
 document.addEventListener('DOMContentLoaded', () => {
   // const element = parsed.slice(0, 1)
-  const element = parsed.slice(4, 5)
+  const element = parsed
+  // const element = parsed.slice(4, 5)
 
   element.forEach((data, idx) => {
     const parentClassName = `.plot-${idx + 1}`
@@ -27,17 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasRef2 = document.querySelector(`${parentClassName} .canvas2`)
     const rangesRef = document.querySelector(`${parentClassName} .range`)
 
-    const width = 1000
+    const width = 355
 
-    const board1 = new ChartBoard(data, Drawing, Dom, {
+    const board = new ChartBoard(data, Drawing, Dom, {
       mainChartInfo: ChartInfo.execute(310, width, canvasRef1),
       previewChartInfo: ChartInfo.execute(40, width, canvasRef2),
       rangeInfo: RangeInfo.execute(40, width, rangesRef),
       buttonsParent: document.querySelector(`${parentClassName} .buttons`)
     })
 
-    board1.EasingService = Easing.easeInOut
-    board1.initRange()
+    board.EasingService = Easing.easeInOut
+    board.initRange()
   })
 })
 
