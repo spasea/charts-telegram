@@ -6,7 +6,6 @@ import RangeInfo from './DTO/RangeInfo'
 import Dom from './Services/Dom'
 import Drawing from './Services/Drawing'
 import Easing from './Services/Easing'
-import * as serviceWorker from './serviceWorker'
 import './styles/index.scss'
 
 
@@ -18,8 +17,8 @@ console.log({
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  // const element = parsed.slice(0, 1)
-  const element = parsed
+  const element = parsed.slice(0, 1)
+  // const element = parsed
   // const element = parsed.slice(4, 5)
 
   element.forEach((data, idx) => {
@@ -28,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasRef2 = document.querySelector(`${parentClassName} .canvas2`)
     const rangesRef = document.querySelector(`${parentClassName} .range`)
 
-    const width = 355
+    // const width = 355
+    const width = 1000
 
     const board = new ChartBoard(data, Drawing, Dom, {
       mainChartInfo: ChartInfo.execute(310, width, canvasRef1),
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     board.EasingService = Easing.easeInOut
-    board.initRange()
+    // board.initRange()
   })
 })
 

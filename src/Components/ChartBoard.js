@@ -4,6 +4,7 @@ import ChartInfo from '../DTO/ChartInfo'
 import RangeInfo from '../DTO/RangeInfo'
 import Drawing from '../Services/Drawing'
 import Buttons from './Buttons'
+import ChartAxisData from './ChartAxisData'
 import Range from './Range'
 import ChartDrawing from './ChartDrawing'
 
@@ -36,9 +37,9 @@ class ChartBoard {
     this.buttonsParent = options.buttonsParent
     this.range = options.rangeValues
 
+    this.initAxes()
     this.initCharts()
-    this.initButtons()
-    // this.initRange()
+    // this.initButtons()
   }
 
   set EasingService (service) {
@@ -49,9 +50,14 @@ class ChartBoard {
     return this._EasingService
   }
 
+  initAxes () {
+    this.mainChartInfo.axis = new ChartAxisData(this.getChartsData(this.range, () => true), this.mainChartInfo.width, this.mainChartInfo.height)
+    this.mainChartInfo.axis.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
+    this.mainChartInfo.axis.initLines()
+  }
+
   initRange () {
     const maxValue = this.chartData.columns[0].length - 1
-    // const maxValue = 10
     const range = new Range(this.rangeInfo.height, this.rangeInfo.width, maxValue, 0, {
       rangesRef: this.rangeInfo.rangesRef,
       range: this.range,
@@ -79,7 +85,7 @@ class ChartBoard {
       smoothTransition: this.smoothTransition,
       chartAxis: this.getChartsData(this.range, () => true)
     })
-    this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
+    this.mainChartInfo.chartDrawing.DrawingService = this.mainChartInfo.axis.DrawingService
     this.mainChartInfo.chartDrawing.initialDraw(this.chartData.colors)
 
     this.previewChartInfo.chartDrawing = new ChartDrawing(this.previewChartInfo.height, this.previewChartInfo.width, {

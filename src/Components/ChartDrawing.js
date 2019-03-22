@@ -11,7 +11,7 @@ class ChartDrawing {
     options = {
       smoothTransition: () => {},
       chartAxis: [],
-      xOffset: 4,
+      xOffset: 0,
       yOffset: 8,
       ...options
     }
