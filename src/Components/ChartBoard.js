@@ -13,6 +13,7 @@ class ChartBoard {
   _DomService = null
   _reqQuery = {}
   range = []
+  selectedCharts = []
 
   constructor (chartData, drawingService, domService, options) {
     options = {
@@ -63,14 +64,7 @@ class ChartBoard {
 
       this.range = [...values.map(Math.round)]
 
-      this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
-        this.chartData.columns[0].slice(1).slice(...this.range),
-        this.chartData.columns.slice(1)
-          .map(column => ([
-            column[0],
-            ...column.slice(1).slice(...this.range)
-          ]))
-      ), this.chartData.colors)()
+      this.mainChartInfo.chartDrawing.updateData(this.getChartsData(this.range), this.chartData.colors)()
 
       this.reqAnimate(1, () => {
         this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
@@ -81,22 +75,16 @@ class ChartBoard {
   }
 
   initCharts () {
-    const getNewData = (range = [0, 1000000]) => ChartAxis.execute(
-      this.chartData.columns[0].slice(1).slice(...range),
-      this.chartData.columns.slice(1)
-        .map(column => column.slice(...range))
-    )
-
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
-      chartAxis: getNewData(this.range)
+      chartAxis: this.getChartsData(this.range, () => true)
     })
     this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
     this.mainChartInfo.chartDrawing.initialDraw(this.chartData.colors)
 
     this.previewChartInfo.chartDrawing = new ChartDrawing(this.previewChartInfo.height, this.previewChartInfo.width, {
       smoothTransition: this.smoothTransition,
-      chartAxis: getNewData()
+      chartAxis: this.getChartsData([0, 1000000], () => true)
     })
     this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
     this.previewChartInfo.chartDrawing.initialDraw(this.chartData.colors)
@@ -115,21 +103,14 @@ class ChartBoard {
     }
 
     const btns = new Buttons(buttonsArray, this.buttonsParent, checkedButtons)
+    this.selectedCharts = [...checkedButtons]
     btns.DomService = this._DomService
 
     const updatePlot = checkedIds => {
-      const getNewData = (range = [0, 1000000]) => ChartAxis.execute(
-        this.chartData.columns[0].slice(1).slice(...range),
-        this.chartData.columns.slice(1)
-          .filter(column => checkedIds.includes(column[0]))
-          .map(column => ([
-            column[0],
-            ...column.slice(1).slice(...range)
-          ]))
-      )
+      this.selectedCharts = [...checkedIds]
 
-      this.mainChartInfo.chartDrawing.updateData(getNewData(this.range), this.chartData.colors)()
-      this.previewChartInfo.chartDrawing.updateData(getNewData(), this.chartData.colors)()
+      this.mainChartInfo.chartDrawing.updateData(this.getChartsData(this.range), this.chartData.colors)()
+      this.previewChartInfo.chartDrawing.updateData(this.getChartsData(), this.chartData.colors)()
 
       this.reqAnimate(1, () => {
         this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
@@ -153,8 +134,19 @@ class ChartBoard {
     btns.renders()
   }
 
-  reqAnimate (id = 1, clearCanvas = () => {}) {
-    let stopAnimation = false
+  getChartsData (range = [0, 1000000], filterCb = column => this.selectedCharts.includes(column[0])) {
+    return ChartAxis.execute(
+      this.chartData.columns[0].slice(1).slice(...range),
+      this.chartData.columns.slice(1)
+        .filter(filterCb)
+        .map(column => ([
+          column[0],
+          ...column.slice(1).slice(...range)
+        ]))
+    )
+  }
+
+  reqAnimate (id = 1, clearCanvas = () => {}, stopAnimation = false) {
     if (id > Object.keys(this._reqQuery).length || stopAnimation) {
       return
     }
@@ -169,12 +161,8 @@ class ChartBoard {
     id += 1
 
     requestAnimationFrame(() => {
-      this.reqAnimate(id, clearCanvas)
+      this.reqAnimate(id, clearCanvas, stopAnimation)
     })
-
-    return () => {
-      stopAnimation = true
-    }
   }
 
   smoothTransition = (previous, next, max = 60, cb) => {
@@ -200,8 +188,6 @@ class ChartBoard {
 
       this._reqQuery[current].push(method)
     }
-
-    // return () => cb(next)
 
     return method
   }
