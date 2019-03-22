@@ -29,7 +29,7 @@
       cursor: pointer;
       background: rgba($main-blue, 0.6);
       border: none;
-      height: 40px;
+      height: 41px;
       width: 6px;
       pointer-events: all;
     }
@@ -67,7 +67,7 @@
         background: none;
       }
       &::-webkit-slider-thumb {
-        transform: translateY(calc((40px / -3) * 2 + 1px));
+        transform: translateY(calc((40px / -3) * 2));
       }
     }
   }

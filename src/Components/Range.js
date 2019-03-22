@@ -189,7 +189,7 @@ class Range {
   }
 
   getOverlay (value) {
-    return value * (this.width - 6) / (this.maxValue - this.minValue)
+    return Math.ceil(value * (this.width - 6) / (this.maxValue - this.minValue))
   }
 
   _componentWillUpdate () {
