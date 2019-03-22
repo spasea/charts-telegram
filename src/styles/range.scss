@@ -5,7 +5,8 @@
   height: var(--height);
   position: relative;
   overflow: hidden;
-  border: 1px solid #000;
+  border: 1px solid rgba($main-blue, 0.4);
+  margin-bottom: 20px;
 
   canvas {
     position: absolute;
@@ -26,7 +27,7 @@
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
       cursor: pointer;
-      background: red;
+      background: rgba($main-blue, 0.6);
       height: 40px;
       width: 6px;
       pointer-events: all;
@@ -43,7 +44,6 @@
       }
       &::-webkit-slider-thumb {
         transform: translateY(calc((40px / -3) * 1));
-        background: yellow;
       }
     }
 
@@ -75,7 +75,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    background: rgba(#f00, 0.2);
+    background: rgba($main-blue, 0.2);
     width: var(--distance);
     z-index: -1;
 

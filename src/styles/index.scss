@@ -1,6 +1,7 @@
 @import "~normalize.scss/normalize";
 
 $base-transition: 300ms all cubic-bezier(0.46, 0.03, 0.52, 0.96);
+$main-blue: #6b89ff;
 
 @import "buttons";
 @import "range";
@@ -13,12 +14,13 @@ $base-transition: 300ms all cubic-bezier(0.46, 0.03, 0.52, 0.96);
 
 .plot {
   margin-bottom: 40px;
-  margin-right: 20px;
+  margin-right: 10px;
+  padding: 0 10px;
   display: flex;
   flex-flow: column wrap;
 }
 
 .canvas1 {
   margin-bottom: 20px;
-  background: #eee;
+  //background: #eee;
 }
