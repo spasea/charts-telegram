@@ -61,11 +61,10 @@ class ChartBoard {
     range.componentUpdate = values => {
       // return
 
-      values = values.map(Math.round)
-      this.range = [...values]
+      this.range = [...values.map(Math.round)]
 
       this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
-        this.chartData.columns[0].slice(1).slice(...values),
+        this.chartData.columns[0].slice(1).slice(...this.range),
         this.chartData.columns.slice(1)
           .map(column => ([
             column[0],
@@ -155,7 +154,8 @@ class ChartBoard {
   }
 
   reqAnimate (id = 1, clearCanvas = () => {}) {
-    if (id > Object.keys(this._reqQuery).length) {
+    let stopAnimation = false
+    if (id > Object.keys(this._reqQuery).length || stopAnimation) {
       return
     }
 
@@ -171,6 +171,10 @@ class ChartBoard {
     requestAnimationFrame(() => {
       this.reqAnimate(id, clearCanvas)
     })
+
+    return () => {
+      stopAnimation = true
+    }
   }
 
   smoothTransition = (previous, next, max = 60, cb) => {
