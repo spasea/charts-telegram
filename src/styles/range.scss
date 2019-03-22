@@ -55,7 +55,8 @@
         //background: none;
         //border: 1px solid blue;
         box-sizing: border-box;
-        background: rgba(blue, 0.4);
+        //background: rgba(blue, 0.4);
+        background: none;
         width: var(--thumb-width);
       }
     }
@@ -76,6 +77,7 @@
     bottom: 0;
     background: rgba(#f00, 0.2);
     width: var(--distance);
+    z-index: -1;
 
     &--is-left {
       left: 0;

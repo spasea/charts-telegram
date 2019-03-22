@@ -188,6 +188,10 @@ class Range {
     return value * (this.width - 6 - 4) / (this.maxValue - this.minValue)
   }
 
+  getOverlay (value) {
+    return value * this.width / (this.maxValue - this.minValue)
+  }
+
   _componentWillUpdate () {
     this._elements.smallerInput.value = this.range[0]
     this._elements.biggerInput.value = this.range[1]
@@ -197,9 +201,8 @@ class Range {
     this._elements.middleInput.style.setProperty(this.customProps.thumbScale, width / 4)
     this._elements.middleInput.value = (this.range[1] + this.range[0]) / 2
 
-    console.log({
-      rg: this.range
-    })
+    this._elements.leftOverlay.style.setProperty(this.customProps.distance, `${this.getOverlay(this.range[0])}px`)
+    this._elements.rightOverlay.style.setProperty(this.customProps.distance, `${this.getOverlay(this.maxValue - this.range[1])}px`)
 
     this.delayedUpdate()
   }
