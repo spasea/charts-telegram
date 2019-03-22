@@ -22,5 +22,11 @@ $main-blue: #6b89ff;
 
 .canvas1 {
   margin-bottom: 20px;
-  //background: #eee;
+  height: var(--height);
+  width: var(--width);
+}
+
+.canvas2 {
+  height: var(--height);
+  width: var(--width);
 }
