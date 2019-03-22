@@ -1,3 +1,5 @@
+import Throttle from '../Services/Throttle'
+
 class Range {
   _DomService = null
   _elements = {}
@@ -6,7 +8,8 @@ class Range {
   constructor (height, width, maxValue, minValue, options = {}) {
     options = {
       rangesRef: null,
-      range: [0, 2],
+      range: [0, 4],
+      minDiff: 8,
       ...options
     }
 
@@ -16,6 +19,7 @@ class Range {
     this.minValue = minValue
     this.range = options.range
     this.rangesRef = options.rangesRef
+    this.minDiff = options.minDiff
     this.customProps = {
       distance: '--distance',
       thumbWidth: '--thumb-width',
@@ -61,12 +65,86 @@ class Range {
     return overlay
   }
 
+  // delayedUpdate = Throttle.execute(() => this.componentUpdate(this.range), 0)
+  delayedUpdate = () => this.componentUpdate(this.range)
+
+  updateSmallerRange (value) {
+    const isDiffSmaller = this.range[1] - value <= this.minDiff
+
+    if (!isDiffSmaller) {
+      this.range[0] = value
+
+      return
+    }
+
+    const isSmallerOverflow = this.range[0] + this.minDiff >= +this.maxValue
+
+    if (isSmallerOverflow) {
+      this.range[1] = +this.maxValue
+      this.range[0] = this.range[1] - this.minDiff
+
+      return
+    }
+
+    this.range[1] = value + this.minDiff
+    this.range[0] = value
+  }
+
+  updateMiddleRange (value) {
+    const previousValue = (this.range[1] + this.range[0]) / 2
+    const previousDiff = this.range[1] - this.range[0]
+    const diff = value - previousValue
+    const smallerValue = this.range[0] + diff
+    const biggerValue = this.range[1] + diff
+
+    if (smallerValue <= this.minValue) {
+      this.updateSmallerRange(this.minValue)
+      this.updateBiggerRange(this.minValue + previousDiff)
+
+      return
+    }
+
+    if (biggerValue >= this.maxValue) {
+      this.updateSmallerRange(this.maxValue - previousDiff)
+      this.updateBiggerRange(this.maxValue)
+
+      return
+    }
+
+    this.updateSmallerRange(smallerValue)
+    this.updateBiggerRange(biggerValue)
+  }
+
+  updateBiggerRange (value) {
+    const isDiffSmaller = value - this.range[0] <= this.minDiff
+
+    if (!isDiffSmaller) {
+      this.range[1] = value
+
+      return
+    }
+
+    const isBiggerOverflow = this.range[1] - this.minDiff <= +this.minValue
+
+    if (isBiggerOverflow) {
+      this.range[0] = +this.minValue
+      this.range[1] = this.range[0] + this.minDiff
+
+      return
+    }
+
+    this.range[0] = value - this.minDiff
+
+    this.range[1] = value
+  }
+
   generateRanges () {
     const smallerInput = this.createInput('range__input--is-smaller')
     smallerInput.step = 0.25
     smallerInput.addEventListener('input', e => {
       const val = e.target.value
-      this.range[0] = +val
+      this.updateSmallerRange(+val)
+
       this._componentWillUpdate()
     })
 
@@ -74,11 +152,7 @@ class Range {
     middleInput.step = 0.125
     middleInput.addEventListener('input', e => {
       const val = +e.target.value
-      const previousValue = (this.range[1] + this.range[0]) / 2
-      const diff = val - previousValue
-
-      this.range[0] += diff
-      this.range[1] += diff
+      this.updateMiddleRange(val)
 
       this._componentWillUpdate()
     })
@@ -87,7 +161,8 @@ class Range {
     biggerInput.step = 0.25
     biggerInput.addEventListener('input', e => {
       const val = e.target.value
-      this.range[1] = +val
+      this.updateBiggerRange(+val)
+
       this._componentWillUpdate()
     })
 
@@ -122,7 +197,11 @@ class Range {
     this._elements.middleInput.style.setProperty(this.customProps.thumbScale, width / 4)
     this._elements.middleInput.value = (this.range[1] + this.range[0]) / 2
 
-    this.componentUpdate(this.range)
+    console.log({
+      rg: this.range
+    })
+
+    this.delayedUpdate()
   }
 
   renders () {

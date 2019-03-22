@@ -33,7 +33,7 @@ class ChartBoard {
     this.buttonsParent = options.buttonsParent
 
     this.initCharts()
-    // this.initButtons()
+    this.initButtons()
     // this.initRange()
   }
 
@@ -50,24 +50,34 @@ class ChartBoard {
     // const maxValue = 10
     const range = new Range(this.rangeInfo.height, this.rangeInfo.width, maxValue, 0, {
       rangesRef: this.rangeInfo.rangesRef,
-      range: [5, 11],
+      range: [2, 12],
     })
 
     range.DomService = this._DomService
 
     range.componentUpdate = values => {
+      return
+
       values = values.map(Math.round)
 
+      // values[0] = values[0] < 0 ? 0 : values[0]
+
       console.log({
-        values
+        values: values[0]
       })
 
       this.mainChartInfo.chartDrawing.updateData(ChartAxis.execute(
-        this.chartData.columns[0].slice(...values),
+        this.chartData.columns[0].slice(1).slice(...values),
         this.chartData.columns.slice(1)
+          .map(column => ([
+            column[0],
+            ...column.slice(1).slice(...values)
+          ]))
       ), this.chartData.colors)()
 
-      this.reqAnimate()
+      this.reqAnimate(1, () => {
+        this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
+      })
     }
 
     range.renders()
@@ -123,7 +133,10 @@ class ChartBoard {
       this.mainChartInfo.chartDrawing.updateData(getNewData(amount), this.chartData.colors)()
       this.previewChartInfo.chartDrawing.updateData(getNewData(), this.chartData.colors)()
 
-      this.reqAnimate()
+      this.reqAnimate(1, () => {
+        this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
+        this.previewChartInfo.chartDrawing.DrawingService.clearCanvas()
+      })
     }
 
     btns.componentUpdate = id => {
@@ -142,7 +155,7 @@ class ChartBoard {
     btns.renders()
   }
 
-  reqAnimate (id = 1) {
+  reqAnimate (id = 1, clearCanvas = () => {}) {
     if (id > Object.keys(this._reqQuery).length) {
       return
     }
@@ -150,15 +163,14 @@ class ChartBoard {
     const currentFrameMethods = this._reqQuery[id]
 
     if (id !== (this.time - 1)) {
-      this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
-      // this.previewChartInfo.chartDrawing.DrawingService.clearCanvas()
+      clearCanvas()
     }
     currentFrameMethods.forEach(method => method())
 
     id += 1
 
     requestAnimationFrame(() => {
-      this.reqAnimate(id)
+      this.reqAnimate(id, clearCanvas)
     })
   }
 
@@ -185,6 +197,8 @@ class ChartBoard {
 
       this._reqQuery[current].push(method)
     }
+
+    // return () => cb(next)
 
     return method
   }
