@@ -50,7 +50,7 @@ class ChartDrawing {
   }
 
   initialDraw (colors) {
-    this.biggestX = this.chartAxis.xAxis.length
+    this.biggestX = this.chartAxis.xAxis.length - 1
     const yAxis = this.processYAxis(this.chartAxis.yAxis)
     const yArray = Object.values(yAxis).reduce((acc, axis) => [
       ...acc,
@@ -95,7 +95,7 @@ class ChartDrawing {
   updateData (newAxis, colors) {
     // this.biggestX = Math.max(...newAxis.xAxis)
 
-    this.biggestX = newAxis.xAxis.length
+    this.biggestX = newAxis.xAxis.length - 1
     const yAxis = this.processYAxis(newAxis.yAxis)
     const yArray = Object.values(yAxis).reduce((acc, axis) => [
       ...acc,
