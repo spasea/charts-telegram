@@ -60,9 +60,9 @@ class ChartBoard {
     range.DomService = this._DomService
 
     range.componentUpdate = values => {
-      // return
-
       this.range = [...values.map(Math.round)]
+
+      this.reqAnimate(1, () => {}, true)
 
       this.mainChartInfo.chartDrawing.updateData(this.getChartsData(this.range), this.chartData.colors)()
 
@@ -109,6 +109,8 @@ class ChartBoard {
     const updatePlot = checkedIds => {
       this.selectedCharts = [...checkedIds]
 
+      this.reqAnimate(1, () => {}, true)
+
       this.mainChartInfo.chartDrawing.updateData(this.getChartsData(this.range), this.chartData.colors)()
       this.previewChartInfo.chartDrawing.updateData(this.getChartsData(), this.chartData.colors)()
 
@@ -148,6 +150,7 @@ class ChartBoard {
 
   reqAnimate (id = 1, clearCanvas = () => {}, stopAnimation = false) {
     if (id > Object.keys(this._reqQuery).length || stopAnimation) {
+      this._reqQuery = {}
       return
     }
 

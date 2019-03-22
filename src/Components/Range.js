@@ -65,8 +65,8 @@ class Range {
     return overlay
   }
 
-  // delayedUpdate = Throttle.execute(() => this.componentUpdate(this.range), 0)
-  delayedUpdate = () => this.componentUpdate(this.range)
+  delayedUpdate = Throttle.execute(() => this.componentUpdate(this.range), 40)
+  // delayedUpdate = () => this.componentUpdate(this.range)
 
   updateSmallerRange (value) {
     const isDiffSmaller = this.range[1] - value <= this.minDiff
@@ -189,7 +189,7 @@ class Range {
   }
 
   getOverlay (value) {
-    return value * this.width / (this.maxValue - this.minValue)
+    return value * (this.width - 6) / (this.maxValue - this.minValue)
   }
 
   _componentWillUpdate () {

@@ -18,7 +18,10 @@ console.log({
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  parsed.slice(0, 1).forEach((data, idx) => {
+  // const element = parsed.slice(0, 1)
+  const element = parsed.slice(4, 5)
+
+  element.forEach((data, idx) => {
     const parentClassName = `.plot-${idx + 1}`
     const canvasRef1 = document.querySelector(`${parentClassName} .canvas1`)
     const canvasRef2 = document.querySelector(`${parentClassName} .canvas2`)
