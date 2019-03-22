@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mainChartInfo: ChartInfo.execute(310, width, canvasRef1),
       previewChartInfo: ChartInfo.execute(40, width, canvasRef2),
       rangeInfo: RangeInfo.execute(40, width, rangesRef),
+      rangeValues: idx === 4 ? [10, 60] : [10, 30],
       buttonsParent: document.querySelector(`${parentClassName} .buttons`)
     })
 
