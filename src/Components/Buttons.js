@@ -1,6 +1,6 @@
 class Buttons {
   _DomService = null
-  componentUpdate = () => ''
+  componentUpdate = id => id
 
   /**
    *
