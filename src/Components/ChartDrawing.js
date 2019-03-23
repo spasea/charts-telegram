@@ -13,6 +13,7 @@ class ChartDrawing {
       chartAxis: [],
       xOffset: 0,
       yOffset: 8,
+      time: 30,
       ...options
     }
 
@@ -22,6 +23,7 @@ class ChartDrawing {
     this.previousAxis = options.chartAxis
     this.xOffset = options.xOffset
     this.yOffset = options.yOffset
+    this.time = options.time
     this.smoothTransition = options.smoothTransition
   }
 
@@ -35,9 +37,7 @@ class ChartDrawing {
 
   scaleX = x => x * (this.width - this.xOffset) / this.biggestX
   scaleY = y => {
-    const diff = this.biggestY - this.smallestY
-
-    return (y - this.smallestY + 1) * (this.height - this.yOffset) / diff + this.yOffset - 6
+    return (y - this.smallestY - 2) * (this.height - this.yOffset) / this.biggestY + this.yOffset
   }
 
   processYAxis (axis) {

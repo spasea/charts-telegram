@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     board.EasingService = Easing.easeInOut
-    // board.initRange()
+    board.initRange()
   })
 })
 

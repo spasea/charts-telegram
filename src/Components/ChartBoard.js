@@ -39,7 +39,7 @@ class ChartBoard {
 
     this.initAxes()
     this.initCharts()
-    // this.initButtons()
+    this.initButtons()
   }
 
   set EasingService (service) {
@@ -69,8 +69,13 @@ class ChartBoard {
       this.range = [...values.map(Math.round)]
 
       this.reqAnimate(1, () => {}, true)
+      const newData = this.getChartsData(this.range)
 
-      this.mainChartInfo.chartDrawing.updateData(this.getChartsData(this.range), this.chartData.colors)()
+
+      this.smoothTransition(1, 2, this.time, () => {
+        this.mainChartInfo.axis.updateAxis(newData)
+      })()
+      this.mainChartInfo.chartDrawing.updateData(newData, this.chartData.colors)()
 
       this.reqAnimate(1, () => {
         this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
@@ -83,6 +88,8 @@ class ChartBoard {
   initCharts () {
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
+      time: this.time,
+      yOffset: 40,
       chartAxis: this.getChartsData(this.range, () => true)
     })
     this.mainChartInfo.chartDrawing.DrawingService = this.mainChartInfo.axis.DrawingService
@@ -90,6 +97,7 @@ class ChartBoard {
 
     this.previewChartInfo.chartDrawing = new ChartDrawing(this.previewChartInfo.height, this.previewChartInfo.width, {
       smoothTransition: this.smoothTransition,
+      time: this.time,
       chartAxis: this.getChartsData([0, 1000000], () => true)
     })
     this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
@@ -117,6 +125,9 @@ class ChartBoard {
 
       this.reqAnimate(1, () => {}, true)
 
+      this.smoothTransition(1, 2, this.time, () => {
+        this.mainChartInfo.axis.updateAxis(this.getChartsData(this.range))
+      })()
       this.mainChartInfo.chartDrawing.updateData(this.getChartsData(this.range), this.chartData.colors)()
       this.previewChartInfo.chartDrawing.updateData(this.getChartsData(), this.chartData.colors)()
 
