@@ -37,6 +37,9 @@ class ChartDrawing {
 
   scaleX = x => x * (this.width - this.xOffset) / this.biggestX
   scaleY = y => {
+    // const diff = this.biggestY - this.smallestY
+    // return (y - this.smallestY - 2) * (this.height - this.yOffset) / diff + this.yOffset
+
     return (y - this.smallestY - 2) * (this.height - this.yOffset) / this.biggestY + this.yOffset
   }
 
