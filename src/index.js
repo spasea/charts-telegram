@@ -17,8 +17,11 @@ console.log({
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  // const element = parsed
-  const element = parsed.slice(0, 1)
+  const element = parsed
+  // const element = parsed.slice(0, 1)
+  // const element = parsed.slice(1, 2)
+  // const element = parsed.slice(2, 3)
+  // const element = parsed.slice(3, 4)
   // const element = parsed.slice(4, 5)
 
   element.forEach((data, idx) => {
@@ -34,12 +37,16 @@ document.addEventListener('DOMContentLoaded', () => {
       mainChartInfo: ChartInfo.execute(310, width, canvasRef1),
       previewChartInfo: ChartInfo.execute(40, width, canvasRef2),
       rangeInfo: RangeInfo.execute(40, width, rangesRef),
-      rangeValues: idx === 4 ? [10, 60] : [10, 20],
+      rangeValues: idx === 4 ? [10, 60] : [20, 30],
       buttonsParent: document.querySelector(`${parentClassName} .buttons`)
     })
 
     board.EasingService = Easing.easeInOut
     board.initRange()
+
+    console.log({
+      board
+    })
   })
 })
 

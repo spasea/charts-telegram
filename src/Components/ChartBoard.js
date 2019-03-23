@@ -84,6 +84,10 @@ class ChartBoard {
       this.reqAnimate(1, () => {
         this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
       })
+
+      console.log({
+        rg: this.range
+      })
     }
 
     range.renders()
@@ -93,7 +97,6 @@ class ChartBoard {
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
       time: this.time,
-      yOffset: 40,
       chartAxis: this.getChartsData(this.range, () => true)
     })
     this.mainChartInfo.chartDrawing.DrawingService = this.mainChartInfo.axis.DrawingService
@@ -102,6 +105,7 @@ class ChartBoard {
     this.previewChartInfo.chartDrawing = new ChartDrawing(this.previewChartInfo.height, this.previewChartInfo.width, {
       smoothTransition: this.smoothTransition,
       time: this.time,
+      yOffset: [5, 5],
       chartAxis: this.getChartsData([0, 1000000], () => true)
     })
     this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)

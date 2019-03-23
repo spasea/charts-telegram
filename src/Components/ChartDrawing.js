@@ -12,7 +12,7 @@ class ChartDrawing {
       smoothTransition: () => {},
       chartAxis: [],
       xOffset: 0,
-      yOffset: 8,
+      yOffset: [0, 30],
       time: 30,
       ...options
     }
@@ -35,12 +35,16 @@ class ChartDrawing {
     return this._DrawingService
   }
 
+  get workingHeight () {
+    return this.height - this.yOffset[0] - this.yOffset[1]
+  }
+
   scaleX = x => x * (this.width - this.xOffset) / this.biggestX
   scaleY = y => {
     // const diff = this.biggestY - this.smallestY
     // return (y - this.smallestY - 2) * (this.height - this.yOffset) / diff + this.yOffset
 
-    return (y - this.smallestY - 2) * (this.height - this.yOffset) / this.biggestY + this.yOffset
+    return (y * this.workingHeight / this.biggestY) + this.yOffset[0]
   }
 
   processYAxis (axis) {
@@ -97,7 +101,6 @@ class ChartDrawing {
 
   updateData (newAxis, colors) {
     // this.biggestX = Math.max(...newAxis.xAxis)
-
     this.biggestX = newAxis.xAxis.length - 1
     const yAxis = this.processYAxis(newAxis.yAxis)
     const yArray = Object.values(yAxis).reduce((acc, axis) => [
@@ -107,6 +110,12 @@ class ChartDrawing {
 
     this.biggestY = Math.max(...yArray)
     this.smallestY = Math.min(...yArray)
+
+    // console.log({
+    //   newAxis,
+    //   bgs: this.biggestY,
+    //   smls: this.smallestY
+    // })
 
     this.previousAxis = {...this.chartAxis}
 
