@@ -43,7 +43,6 @@ class Drawing {
     this.ctx.moveTo(...start.value.map(this.getScale))
     this.ctx.lineTo(...end.value.map(this.getScale))
     this.ctx.stroke()
-    // this.ctx.fillText(start.value[1], ...start.value)
   }
 
   /**
@@ -57,6 +56,30 @@ class Drawing {
     this.ctx.beginPath()
     this.ctx.arc(...coordinates.value.map(this.getScale), radius, 0, 2 * Math.PI)
     this.ctx.fill()
+  }
+
+  writeAText (coordinates, text, options = {}) {
+    options = {
+      color: '#000',
+      fontSize: 10,
+      offset: 5,
+      ...options
+    }
+
+    const {
+      fontSize,
+      color,
+      offset,
+    } = options
+
+    this.ctx.beginPath()
+    this.ctx.font = `${this.getScale(fontSize)}px Arial`
+    this.ctx.fillStyle = color
+
+    const textCoordinates = coordinates.value.map(this.getScale)
+    textCoordinates[1] -= this.getScale(offset)
+
+    this.ctx.fillText(text, ...textCoordinates)
   }
 }
 

@@ -4,6 +4,7 @@ import ChartInfo from '../DTO/ChartInfo'
 import RangeInfo from '../DTO/RangeInfo'
 import Drawing from '../Services/Drawing'
 import Buttons from './Buttons'
+import ChartAxisData from './ChartAxisData'
 import Range from './Range'
 import ChartDrawing from './ChartDrawing'
 
@@ -21,6 +22,7 @@ class ChartBoard {
       previewChartInfo: ChartInfo.execute(40, 600, null),
       rangeInfo: RangeInfo.execute(40, 600, null),
       rangeValues: [0, 20],
+      monthsNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       buttonsParent: null,
       animationTime: 30,
       ...options
@@ -35,10 +37,11 @@ class ChartBoard {
     this.rangeInfo = options.rangeInfo
     this.buttonsParent = options.buttonsParent
     this.range = options.rangeValues
+    this.monthsNames = options.monthsNames
 
+    this.initAxes()
     this.initCharts()
     this.initButtons()
-    // this.initRange()
   }
 
   set EasingService (service) {
@@ -49,9 +52,16 @@ class ChartBoard {
     return this._EasingService
   }
 
+  initAxes () {
+    this.mainChartInfo.axis = new ChartAxisData(this.getChartsData(this.range, () => true), this.mainChartInfo.width, this.mainChartInfo.height, {
+      monthsNames: this.monthsNames
+    })
+    this.mainChartInfo.axis.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
+    this.mainChartInfo.axis.initLines()
+  }
+
   initRange () {
     const maxValue = this.chartData.columns[0].length - 1
-    // const maxValue = 10
     const range = new Range(this.rangeInfo.height, this.rangeInfo.width, maxValue, 0, {
       rangesRef: this.rangeInfo.rangesRef,
       range: this.range,
@@ -63,11 +73,20 @@ class ChartBoard {
       this.range = [...values.map(Math.round)]
 
       this.reqAnimate(1, () => {}, true)
+      const newData = this.getChartsData(this.range)
 
-      this.mainChartInfo.chartDrawing.updateData(this.getChartsData(this.range), this.chartData.colors)()
+
+      this.smoothTransition(1, 2, this.time, () => {
+        this.mainChartInfo.axis.updateAxis(newData)
+      })()
+      this.mainChartInfo.chartDrawing.updateData(newData, this.chartData.colors)()
 
       this.reqAnimate(1, () => {
         this.mainChartInfo.chartDrawing.DrawingService.clearCanvas()
+      })
+
+      console.log({
+        rg: this.range
       })
     }
 
@@ -77,13 +96,16 @@ class ChartBoard {
   initCharts () {
     this.mainChartInfo.chartDrawing = new ChartDrawing(this.mainChartInfo.height, this.mainChartInfo.width, {
       smoothTransition: this.smoothTransition,
+      time: this.time,
       chartAxis: this.getChartsData(this.range, () => true)
     })
-    this.mainChartInfo.chartDrawing.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
+    this.mainChartInfo.chartDrawing.DrawingService = this.mainChartInfo.axis.DrawingService
     this.mainChartInfo.chartDrawing.initialDraw(this.chartData.colors)
 
     this.previewChartInfo.chartDrawing = new ChartDrawing(this.previewChartInfo.height, this.previewChartInfo.width, {
       smoothTransition: this.smoothTransition,
+      time: this.time,
+      yOffset: [5, 5],
       chartAxis: this.getChartsData([0, 1000000], () => true)
     })
     this.previewChartInfo.chartDrawing.DrawingService = new Drawing(this.previewChartInfo.canvasRef, this.previewChartInfo.width, this.previewChartInfo.height)
@@ -111,6 +133,9 @@ class ChartBoard {
 
       this.reqAnimate(1, () => {}, true)
 
+      this.smoothTransition(1, 2, this.time, () => {
+        this.mainChartInfo.axis.updateAxis(this.getChartsData(this.range))
+      })()
       this.mainChartInfo.chartDrawing.updateData(this.getChartsData(this.range), this.chartData.colors)()
       this.previewChartInfo.chartDrawing.updateData(this.getChartsData(), this.chartData.colors)()
 
