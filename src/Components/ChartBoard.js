@@ -22,6 +22,7 @@ class ChartBoard {
       previewChartInfo: ChartInfo.execute(40, 600, null),
       rangeInfo: RangeInfo.execute(40, 600, null),
       rangeValues: [0, 20],
+      monthsNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       buttonsParent: null,
       animationTime: 30,
       ...options
@@ -36,6 +37,7 @@ class ChartBoard {
     this.rangeInfo = options.rangeInfo
     this.buttonsParent = options.buttonsParent
     this.range = options.rangeValues
+    this.monthsNames = options.monthsNames
 
     this.initAxes()
     this.initCharts()
@@ -51,7 +53,9 @@ class ChartBoard {
   }
 
   initAxes () {
-    this.mainChartInfo.axis = new ChartAxisData(this.getChartsData(this.range, () => true), this.mainChartInfo.width, this.mainChartInfo.height)
+    this.mainChartInfo.axis = new ChartAxisData(this.getChartsData(this.range, () => true), this.mainChartInfo.width, this.mainChartInfo.height, {
+      monthsNames: this.monthsNames
+    })
     this.mainChartInfo.axis.DrawingService = new Drawing(this.mainChartInfo.canvasRef, this.mainChartInfo.width, this.mainChartInfo.height)
     this.mainChartInfo.axis.initLines()
   }

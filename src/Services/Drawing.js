@@ -73,7 +73,7 @@ class Drawing {
     } = options
 
     this.ctx.beginPath()
-    this.ctx.font = `${this.getScale(fontSize)}px Century Gothic`
+    this.ctx.font = `${this.getScale(fontSize)}px Arial`
     this.ctx.fillStyle = color
 
     const textCoordinates = coordinates.value.map(this.getScale)
